@@ -13,8 +13,6 @@ msgstr ""
 "X-Generator: Trae IDE / GPT\n"
 "X-Domain: cosmautdl\n"
 
-# 注释微调：用于触发重新发布（不影响翻译内容）
-
 # Error pages (cosmdl-error-pages.php)
 
 #: templates/cosmdl-error-pages.php:20

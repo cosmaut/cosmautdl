@@ -16,7 +16,7 @@ Requires PHP: 7.4
 /**
  * 插件主文件：cosmautdl
  * 作用：插件核心入口，负责初始化多网盘下载管理系统。包括路由系统注册、后台管理界面加载、文章元框集成、前端模板分发、样式资源管理等核心功能。
- * 说明：本插件采用现代化模块化架构，专注于多网盘下载管理场景。提供完整的下载解决方案，包括智能下载卡片、扫码解锁、独立下载页面等特色功能。
+ * 说明：本插采用现代化模块化架构，专注于多网盘下载管理场景。提供完整的下载解决方案，包括智能下载卡片、扫码解锁、独立下载页面等特色功能。
  * 作者：Cosmaut（cosmaut.com / cosmaut@hotmail.com）
  */
 
@@ -801,13 +801,13 @@ function cosmdl_output_card_css_runtime_loader() {
     $href = add_query_arg('ver', cosmdl_asset_version('assets/cosmautdl.css'), COSMDL_PLUGIN_URL . 'assets/cosmautdl.css');
     $href = esc_url($href);
 
-    echo '<script id="cosmdl-runtime-card-css">(function(){\n'
-        . 'var H=' . wp_json_encode($href) . ';\n'
-        . 'function has(){var ls=document.querySelectorAll("link[rel=\\"stylesheet\\"]");for(var i=0;i<ls.length;i++){var u=ls[i].href||"";if(u.indexOf("/assets/cosmautdl.css")!==-1){return true;}}return false;}\n'
-        . 'function ensure(){if(!document.querySelector(".cosmdl-card")){return;}if(has()){return;}var l=document.createElement("link");l.rel="stylesheet";l.href=H;l.setAttribute("data-instant-track","");l.setAttribute("data-cosmdl-runtime","1");document.head.appendChild(l);}\n'
-        . 'function bind(){var ic=window.InstantClick;if(!ic||!ic.on){return false;}if(window.__cosmdl_bound_ic){return true;}window.__cosmdl_bound_ic=true;ic.on("change",function(){ensure();});return true;}\n'
-        . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){ensure();bind();});}else{ensure();bind();}\n'
-        . 'var t=0;var it=setInterval(function(){t++;if(bind()||t>20){clearInterval(it);}},200);\n'
+    echo '<script id="cosmdl-runtime-card-css">(function(){' . "\n"
+        . 'var H=' . wp_json_encode($href) . ';' . "\n"
+        . 'function has(){var ls=document.querySelectorAll("link[rel=\\"stylesheet\\"]");for(var i=0;i<ls.length;i++){var u=ls[i].href||"";if(u.indexOf("/assets/cosmautdl.css")!==-1){return true;}}return false;}' . "\n"
+        . 'function ensure(){if(!document.querySelector(".cosmdl-card")){return;}if(has()){return;}var l=document.createElement("link");l.rel="stylesheet";l.href=H;l.setAttribute("data-instant-track","");l.setAttribute("data-cosmdl-runtime","1");document.head.appendChild(l);}' . "\n"
+        . 'function bind(){var ic=window.InstantClick;if(!ic||!ic.on){return false;}if(window.__cosmdl_bound_ic){return true;}window.__cosmdl_bound_ic=true;ic.on("change",function(){ensure();});return true;}' . "\n"
+        . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){ensure();bind();});}else{ensure();bind();}' . "\n"
+        . 'var t=0;var it=setInterval(function(){t++;if(bind()||t>20){clearInterval(it);}},200);' . "\n"
         . '})();</script>';
 }
 add_action('wp_head', 'cosmdl_output_card_css_runtime_loader', 2);

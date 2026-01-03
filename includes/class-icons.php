@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) exit;
 
 /**
  * SVG 图标资源类
- * 自动生成（仅注释微调），请勿手动修改 SVG 内容
+ * 自动生成，请勿手动修改 SVG 内容
  */
 class cosmautdl_Icons {
 
@@ -45,4 +45,5 @@ class cosmautdl_Icons {
         return '';
     }
 }
+
 

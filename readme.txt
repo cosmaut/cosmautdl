@@ -9,7 +9,7 @@ Stable tag: 1.0.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Organize multi-cloud download links with unified cards, download pages, file tree, and basic stats (simple).
+Organize multi-cloud download links with unified cards, download pages, file tree, and basic stats.
 
 == Description ==
 
