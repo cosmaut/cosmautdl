@@ -12,29 +12,57 @@ CosmautDL 是一款功能强大的 WordPress 下载管理插件，支持多网�
 
 ## 主要特性
 
-### 多网盘支持
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px;">
 
-支持多种主流网盘平台，统一管理入口，一处修改全局生效，告别重复编辑。
+<div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s;">
+  <div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background-color: #e3f2fd; border-radius: 10px; margin-bottom: 15px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width: 28px; height: 28px; color: #1976d2;"><path d="M214.6 221.3c-3.9-3.9-10.2-3.9-14.1 0l-72 72c-3.9 3.9-3.9 10.2 0 14.1l72 72c3.9 3.9 10.2 3.9 14.1 0l72-72c3.9-3.9 3.9-10.2 0-14.1l-72-72zM192 448c-88.4 0-160-71.6-160-160V96C32 43 75 0 128 0H256c53 0 96 43 96 96v192c0 88.4-71.6 160-160 160zm16-160c0 70.7-57.3 128-128 128s-128-57.3-128-128V96C16 51.8 51.8 16 96 16H256c44.2 0 80 35.8 80 80v192z"/></svg>
+  </div>
+  <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;">多网盘支持</h3>
+  <p style="margin: 0; color: #6c757d; line-height: 1.5;">支持多种主流网盘平台，统一管理入口，一处修改全局生效，告别重复编辑。</p>
+</div>
 
-### 优雅卡片
+<div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s;">
+  <div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background-color: #e8f5e9; border-radius: 10px; margin-bottom: 15px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style="width: 28px; height: 28px; color: #388e3c;"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V256H352c-35.3 0-64-28.7-64-64V32H64zM384 256h128v160c0 17.7-14.3 32-32 32H64c-17.7 0-32-14.3-32-32V96c0-17.7 14.3-32 32-32h224v192c0 17.7 14.3 32 32 32zM272 96h64v64h64V96h64v128H272V96z"/></svg>
+  </div>
+  <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;">优雅卡片</h3>
+  <p style="margin: 0; color: #6c757d; line-height: 1.5;">提供结构清晰的下载卡片与独立下载页，视觉体验高度一致。</p>
+</div>
 
-提供结构清晰的下载卡片与独立下载页，视觉体验高度一致。
+<div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s;">
+  <div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background-color: #fff3e0; border-radius: 10px; margin-bottom: 15px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 28px; height: 28px; color: #f57c00;"><path d="M32 32C14.3 32 0 46.3 0 64s14.3 32 32 32H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM80 128c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h80c26.5 0 48-21.5 48-48V176c0-26.5-21.5-48-48-48H80zm-8 208c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H88c-8.8 0-16-7.2-16-16V336zm0 96c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H88c-8.8 0-16-7.2-16-16V432zM248 256c-26.5 0-48 21.5-48 48v64c0 26.5 21.5 48 48 48h80c26.5 0 48-21.5 48-48V304c0-26.5-21.5-48-48-48H248zm-8 208c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H256c-8.8 0-16-7.2-16-16V432zm0-96c0-8.8 7.2-16 16-16h48c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H256c-8.8 0-16-7.2-16-16V336z"/></svg>
+  </div>
+  <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;">扫码解锁</h3>
+  <p style="margin: 0; color: #6c757d; line-height: 1.5;">支持二维码扫码验证，兼顾用户引导与防刷机制。</p>
+</div>
 
-### 扫码解锁
+<div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s;">
+  <div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background-color: #e0f2f1; border-radius: 10px; margin-bottom: 15px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" style="width: 28px; height: 28px; color: #00796b;"><path d="M272 0H48C21.5 0 0 21.5 0 48V320c0 26.5 21.5 48 48 48h80l0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-32 80 0c26.5 0 48-21.5 48-48V48c0-26.5-21.5-48-48-48zm0 320H48V48h224v272z"/></svg>
+  </div>
+  <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;">响应式设计</h3>
+  <p style="margin: 0; color: #6c757d; line-height: 1.5;">完美适配移动设备，移动端也能舒适阅读。</p>
+</div>
 
-支持二维码扫码验证，兼顾用户引导与防刷机制。
+<div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s;">
+  <div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background-color: #ede7f6; border-radius: 10px; margin-bottom: 15px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" style="width: 28px; height: 28px; color: #673ab7;"><path d="M384 32H112C50.2 32 0 82.2 0 144L0 448c0 35.3 28.7 64 64 64l368 0c35.3 0 64-28.7 64-64V144c0-61.8-50.2-112-112-112zM338 346.3c0 12.4-10.1 22.5-22.5 22.5h-39.1c-12.4 0-22.5-10.1-22.5-22.5l0-7.5c0-12.4 10.1-22.5 22.5-22.5h39.1c12.4 0 22.5 10.1 22.5 22.5l0 7.5zM168 346.3c0 12.4-10.1 22.5-22.5 22.5H106.4c-12.4 0-22.5-10.1-22.5-22.5l0-7.5c0-12.4 10.1-22.5 22.5-22.5h39.1c12.4 0 22.5 10.1 22.5 22.5l0 7.5zM338 282.3c0 12.4-10.1 22.5-22.5 22.5h-39.1c-12.4 0-22.5-10.1-22.5-22.5l0-7.5c0-12.4 10.1-22.5 22.5-22.5h39.1c12.4 0 22.5 10.1 22.5 22.5l0 7.5zM168 282.3c0 12.4-10.1 22.5-22.5 22.5H106.4c-12.4 0-22.5-10.1-22.5-22.5l0-7.5c0-12.4 10.1-22.5 22.5-22.5h39.1c12.4 0 22.5 10.1 22.5 22.5l0 7.5zM338 218.3c0 12.4-10.1 22.5-22.5 22.5h-39.1c-12.4 0-22.5-10.1-22.5-22.5l0-7.5c0-12.4 10.1-22.5 22.5-22.5h39.1c12.4 0 22.5 10.1 22.5 22.5l0 7.5zM168 218.3c0 12.4-10.1 22.5-22.5 22.5H106.4c-12.4 0-22.5-10.1-22.5-22.5l0-7.5c0-12.4 10.1-22.5 22.5-22.5h39.1c12.4 0 22.5 10.1 22.5 22.5l0 7.5zM448 320c0-8.8-7.2-16-16-16l-192 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l192 0c8.8 0 16-7.2 16-16z"/></svg>
+  </div>
+  <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;">国际化支持</h3>
+  <p style="margin: 0; color: #6c757d; line-height: 1.5;">支持多语言界面，满足不同语言环境需求。</p>
+</div>
 
-### 响应式设计
+<div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s;">
+  <div style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; background-color: #ffebee; border-radius: 10px; margin-bottom: 15px;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 28px; height: 28px; color: #d32f2f;"><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 32 48 0c26.5 0 48 21.5 48 48s-21.5 48-48 48l-80 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l80 0c44.2 0 80 35.8 80 80l0 64c0 8.8 7.2 16 16 16s16-7.2 16-16l0-64c0-70.7-57.3-128-128-128l-80 0c-26.5 0-48-21.5-48-48s21.5-48 48-48l48 0L256 32zm-96 288l0 128c0 53 43 96 96 96s96-43 96-96V320c0-8.8 7.2-16 16-16s16 7.2 16 16v128c0 88.4-71.6 160-160 160s-160-71.6-160-160V320c0-8.8 7.2-16 16-16s16 7.2 16 16z"/></svg>
+  </div>
+  <h3 style="margin: 0 0 10px 0; font-size: 18px; color: #2c3e50;">性能优化</h3>
+  <p style="margin: 0; color: #6c757d; line-height: 1.5;">高效的下载处理机制，不拖慢网站速度。</p>
+</div>
 
-完美适配移动设备，移动端也能舒适阅读。
-
-### 国际化支持
-
-支持多语言界面，满足不同语言环境需求。
-
-### 性能优化
-
-高效的下载处理机制，不拖慢网站速度。
+</div>
 
 ## 系统要求
 
