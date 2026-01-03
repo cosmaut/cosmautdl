@@ -1,5 +1,5 @@
 /*
- * cosmautdl - 文件树样式（前端）
+ * cosmautdl - 文件树样式（前端，注释微调）
  * 说明：将原 templates/file-tree.php 的内联样式提取为独立文件，便于维护与按条件加载。
  * 加载条件：仅在文件树页面（/?cosmdl_tree=1 或 /downloads/tree.html）加载。
  * 重要选择器：

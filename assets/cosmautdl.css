@@ -1,5 +1,5 @@
 /* 
- * cosmautdl 核心样式表
+ * cosmautdl 核心样式表（注释微调）
  * 
  * 目录索引：
  * 1.  重置与基础设置 (Reset & Base)
@@ -1057,4 +1057,3 @@ html.dark .cosmdl-ad-slot {
   box-shadow: 0 0 0 1px var(--cosmdl-primary-600);
   outline: none;
 }
-
