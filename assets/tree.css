@@ -1,0 +1,49 @@
+/*
+ * cosmautdl - 文件树样式（前端）
+ * 说明：将原 templates/file-tree.php 的内联样式提取为独立文件，便于维护与按条件加载。
+ * 加载条件：仅在文件树页面（/?cosmdl_tree=1 或 /downloads/tree.html）加载。
+ * 重要选择器：
+ *   - .cosmdl-tree-fullwidth  让页面块元素全宽并适配响应式
+ *   - .cosmdl-tree-table-wrap  提供横向滚动容器，避免列过多拥挤
+ *   - .pk-table               主题表格类，设置最小宽度避免窄屏压缩
+ *   - .cosmdl-col-size/.cosmdl-col-updated/.cosmdl-col-author  在极窄屏下隐藏的辅助列
+ *   - .cosmdl-xs-details      移动端展示“更多”折叠详情（在下载项列内）
+ */
+
+/* 文件树页面：全屏宽度响应式适配 */
+.cosmdl-tree-fullwidth { width: 100%; max-width: 100% !important; padding-left: 16px; padding-right: 16px; }
+.cosmdl-tree-fullwidth .p-block { width: 100%; }
+.cosmdl-tree-fullwidth .pk-table { width: 100%; table-layout: auto; }
+
+/* 为表格设定最小宽度，避免在窄屏下列过度压缩，触发横向滚动 */
+.cosmdl-tree-table-wrap .pk-table { min-width: 980px; }
+
+/* 使除“下载项”外的列尽量不换行，增强可读性并触发滚动；下载项允许换行以避免过长徽章溢出 */
+.cosmdl-tree-fullwidth .pk-table th,
+.cosmdl-tree-fullwidth .pk-table td { white-space: nowrap; }
+.cosmdl-tree-fullwidth .pk-table th:last-child,
+.cosmdl-tree-fullwidth .pk-table td:last-child { white-space: normal; }
+
+/* 调整为由页面整体滚动，避免局部滚动容器导致“更多/信息隐藏”需求冲突 */
+.cosmdl-tree-table-wrap { overflow-x: visible; }
+
+/* 默认不渲染移动端折叠详情（已在模板中移除“更多”），即使残留也不显示 */
+.cosmdl-xs-details { display: none !important; }
+
+/* 网盘LOGO悬停效果 */
+.cosmdl-col-links .cosmdl-pan-logo {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  border-radius: 4px;
+}
+
+.cosmdl-col-links .cosmdl-pan-logo:hover {
+  transform: scale(1.15); /* 缩放效果 */
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); /* 阴影效果 */
+  filter: brightness(1.1); /* 亮度增加 */
+}
+
+/* 调整筛选表单在窄屏上的排列方式，避免换行拥挤 */
+@media (max-width: 768px){
+  .cosmdl-tree-fullwidth form { flex-direction: column; align-items: stretch; }
+  .cosmdl-tree-fullwidth form > div { width: 100%; }
+}

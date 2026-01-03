@@ -1,0 +1,534 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: CosmautDL 1.0.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-27 00:00+0000\n"
+"PO-Revision-Date: 2025-12-27 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Chinese (China)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Trae IDE / GPT\n"
+"X-Domain: cosmautdl\n"
+
+# Error pages (cosmdl-error-pages.php)
+
+#: templates/cosmdl-error-pages.php:20
+msgid "Invalid parameters"
+msgstr "参数无效"
+
+#: templates/cosmdl-error-pages.php:21
+msgid "The parameters you provided are invalid. Please check the link or contact the administrator."
+msgstr "您提供的参数不正确，请检查链接或联系管理员。"
+
+#: templates/cosmdl-error-pages.php:26
+msgid "Download link not found"
+msgstr "下载地址不存在"
+
+#: templates/cosmdl-error-pages.php:27
+msgid "The requested download resource does not exist or has been removed."
+msgstr "指定的下载资源不存在或已被删除。"
+
+#: templates/cosmdl-error-pages.php:32
+msgid "Network error"
+msgstr "网络错误"
+
+#: templates/cosmdl-error-pages.php:33
+msgid "A network error occurred. Please try again later."
+msgstr "网络连接出现问题，请稍后重试。"
+
+#: templates/cosmdl-error-pages.php:38
+msgid "Insufficient permissions"
+msgstr "权限不足"
+
+#: templates/cosmdl-error-pages.php:39
+msgid "You do not have permission to access this resource."
+msgstr "您没有权限访问此资源。"
+
+#: templates/cosmdl-error-pages.php:44
+msgid "Service unavailable"
+msgstr "服务不可用"
+
+#: templates/cosmdl-error-pages.php:45
+msgid "The download service is currently unavailable. Please try again later."
+msgstr "下载服务当前不可用，请稍后重试。"
+
+#: templates/cosmdl-error-pages.php:50
+msgid "Unknown error"
+msgstr "未知错误"
+
+#: templates/cosmdl-error-pages.php:51
+msgid "An unknown error occurred. Please contact technical support."
+msgstr "发生了未知错误，请联系技术支持。"
+
+#: templates/cosmdl-error-pages.php:285
+msgid "Error details:"
+msgstr "错误详情："
+
+#: templates/cosmdl-error-pages.php:304
+msgid "Context debug information (visible to administrators only):"
+msgstr "上下文调试信息（仅管理员可见）："
+
+#: templates/cosmdl-error-pages.php:311
+msgid "Back to previous page"
+msgstr "返回上一页"
+
+#: templates/cosmdl-error-pages.php:314
+msgid "Back to homepage"
+msgstr "返回首页"
+
+#: templates/cosmdl-error-pages.php:318
+msgid "Plugin settings"
+msgstr "插件设置"
+
+#: templates/cosmdl-error-pages.php:313
+msgid "Common solutions"
+msgstr "常见解决方案"
+
+#: templates/cosmdl-error-pages.php:318
+msgid "Check whether the link is complete and correct"
+msgstr "检查链接是否完整和正确"
+
+#: templates/cosmdl-error-pages.php:319
+msgid "Make sure the parameters are in the correct format"
+msgstr "确认参数格式符合要求"
+
+#: templates/cosmdl-error-pages.php:320
+msgid "Contact the site administrator to check the configuration"
+msgstr "联系管理员检查配置"
+
+#: templates/cosmdl-error-pages.php:324
+msgid "Confirm that the file exists and is accessible"
+msgstr "确认文件是否存在且可访问"
+
+#: templates/cosmdl-error-pages.php:325
+msgid "Check whether the cloud storage link is valid"
+msgstr "检查网盘链接是否有效"
+
+#: templates/cosmdl-error-pages.php:326
+msgid "Contact the file provider to confirm the resource status"
+msgstr "联系文件提供者确认资源状态"
+
+#: templates/cosmdl-error-pages.php:330
+msgid "Check whether your network connection is normal"
+msgstr "检查网络连接是否正常"
+
+#: templates/cosmdl-error-pages.php:331
+msgid "Try the download again later"
+msgstr "稍后重试下载操作"
+
+#: templates/cosmdl-error-pages.php:332
+msgid "Clear your browser cache and try again"
+msgstr "清除浏览器缓存后重试"
+
+#: templates/cosmdl-error-pages.php:336
+msgid "Refresh the page and try again"
+msgstr "刷新页面重试"
+
+#: templates/cosmdl-error-pages.php:337
+msgid "Clear your browser cache and cookies"
+msgstr "清除浏览器缓存和Cookie"
+
+#: templates/cosmdl-error-pages.php:338
+msgid "Contact technical support for help"
+msgstr "联系技术支持获取帮助"
+
+#: templates/cosmdl-error-pages.php:347
+msgid "Error code: %s | Time: %s"
+msgstr "错误代码：%s | 时间：%s"
+
+#: templates/cosmdl-error-pages.php:354
+msgid "Debug mode is enabled"
+msgstr "调试模式已启用"
+
+#: templates/cosmdl-error-pages.php:376
+msgid "The service may be back online. Refresh the page and try again?"
+msgstr "服务可能已恢复，是否刷新页面重试？"
+
+# File tree (file-tree.php)
+
+#: templates/file-tree.php:19
+msgid "File tree is not enabled"
+msgstr "文件树未启用"
+
+#: templates/file-tree.php:26
+msgid "This page is only visible to administrators"
+msgstr "此页面仅管理员可见"
+
+#: templates/file-tree.php:38
+msgid "An error occurred while loading the theme header:"
+msgstr "加载主题页头时出错："
+
+#: templates/file-tree.php:50
+msgid "File tree (all shared files)"
+msgstr "文件树（所有分享文件）"
+
+#: templates/file-tree.php:50
+msgid "Page %d"
+msgstr "第 %d 页"
+
+#: templates/file-tree.php:192
+msgid "Category"
+msgstr "分类"
+
+#: templates/file-tree.php:195
+msgid "All categories"
+msgstr "全部分类"
+
+#: templates/file-tree.php:199
+msgid "Tag"
+msgstr "标签"
+
+#: templates/file-tree.php:200
+msgid "Tag slug"
+msgstr "标签 slug"
+
+#: templates/file-tree.php:204
+msgid "Author"
+msgstr "作者"
+
+#: templates/file-tree.php:207
+msgid "All authors"
+msgstr "全部作者"
+
+#: templates/file-tree.php:213
+msgid "Keyword"
+msgstr "关键字"
+
+#: templates/file-tree.php:214
+msgid "Post title or resource name"
+msgstr "标题或资源名"
+
+#: templates/file-tree.php:219
+msgid "Size range"
+msgstr "大小范围"
+
+#: templates/file-tree.php:220
+msgid "e.g. 50M"
+msgstr "如 50M"
+
+#: templates/file-tree.php:222
+msgid "e.g. 2G"
+msgstr "如 2G"
+
+#: templates/file-tree.php:227
+msgid "Unit"
+msgstr "单位"
+
+#: templates/file-tree.php:220
+msgid "All"
+msgstr "全部"
+
+#: templates/file-tree.php:233
+msgid "Type"
+msgstr "类型"
+
+#: templates/file-tree.php:241
+msgid "Sort by"
+msgstr "排序"
+
+#: templates/file-tree.php:243
+msgid "By date"
+msgstr "按时间"
+
+#: templates/file-tree.php:244
+msgid "By title"
+msgstr "按标题"
+
+#: templates/file-tree.php:245
+msgid "By resource name"
+msgstr "按资源名"
+
+#: templates/file-tree.php:246
+msgid "By last updated"
+msgstr "按更新"
+
+#: templates/file-tree.php:247
+msgid "By author"
+msgstr "按作者"
+
+#: templates/file-tree.php:248
+msgid "By size"
+msgstr "按大小"
+
+#: templates/file-tree.php:251
+msgid "Descending"
+msgstr "倒序"
+
+#: templates/file-tree.php:252
+msgid "Ascending"
+msgstr "正序"
+
+#: templates/file-tree.php:257
+msgid "Items per page"
+msgstr "每页显示"
+
+#: templates/file-tree.php:262
+msgid "Filter"
+msgstr "筛选"
+
+#: templates/file-tree.php:287
+msgid "Post title"
+msgstr "文章标题"
+
+#: templates/file-tree.php:288
+msgid "Resource name"
+msgstr "资源名"
+
+#: templates/file-tree.php:289
+msgid "Size"
+msgstr "大小"
+
+#: templates/file-tree.php:290
+msgid "Updated"
+msgstr "更新"
+
+#: templates/file-tree.php:292
+msgid "Download items"
+msgstr "下载项"
+
+#: templates/file-tree.php:384
+msgid "No data available"
+msgstr "暂无数据"
+
+#: templates/cosmdl-error-pages.php:20
+msgid "参数无效"
+msgstr "参数无效"
+
+#: templates/cosmdl-error-pages.php:21
+msgid "您提供的参数不正确，请检查链接或联系管理员。"
+msgstr "您提供的参数不正确，请检查链接或联系管理员。"
+
+#: templates/cosmdl-error-pages.php:26
+msgid "下载地址不存在"
+msgstr "下载地址不存在"
+
+#: templates/cosmdl-error-pages.php:27
+msgid "指定的下载资源不存在或已被删除。"
+msgstr "指定的下载资源不存在或已被删除。"
+
+#: templates/cosmdl-error-pages.php:32
+msgid "网络错误"
+msgstr "网络错误"
+
+#: templates/cosmdl-error-pages.php:33
+msgid "网络连接出现问题，请稍后重试。"
+msgstr "网络连接出现问题，请稍后重试。"
+
+#: templates/cosmdl-error-pages.php:38
+msgid "权限不足"
+msgstr "权限不足"
+
+#: templates/cosmdl-error-pages.php:39
+msgid "您没有权限访问此资源。"
+msgstr "您没有权限访问此资源。"
+
+#: templates/cosmdl-error-pages.php:44
+msgid "服务不可用"
+msgstr "服务不可用"
+
+#: templates/cosmdl-error-pages.php:45
+msgid "下载服务当前不可用，请稍后重试。"
+msgstr "下载服务当前不可用，请稍后重试。"
+
+#: templates/cosmdl-error-pages.php:50
+msgid "未知错误"
+msgstr "未知错误"
+
+#: templates/cosmdl-error-pages.php:51
+msgid "发生了未知错误，请联系技术支持。"
+msgstr "发生了未知错误，请联系技术支持。"
+
+#: templates/cosmdl-error-pages.php:285
+msgid "错误详情："
+msgstr "错误详情："
+
+#: templates/cosmdl-error-pages.php:304
+msgid "上下文调试信息（仅管理员可见）："
+msgstr "上下文调试信息（仅管理员可见）："
+
+#: templates/cosmdl-error-pages.php:311
+msgid "返回上一页"
+msgstr "返回上一页"
+
+#: templates/cosmdl-error-pages.php:314
+msgid "返回首页"
+msgstr "返回首页"
+
+#: templates/cosmdl-error-pages.php:318
+msgid "插件设置"
+msgstr "插件设置"
+
+#: templates/cosmdl-error-pages.php:313
+msgid "常见解决方案"
+msgstr "常见解决方案"
+
+#: templates/cosmdl-error-pages.php:318
+msgid "检查链接是否完整和正确"
+msgstr "检查链接是否完整和正确"
+
+#: templates/cosmdl-error-pages.php:319
+msgid "确认参数格式符合要求"
+msgstr "确认参数格式符合要求"
+
+#: templates/cosmdl-error-pages.php:320
+msgid "联系管理员检查配置"
+msgstr "联系管理员检查配置"
+
+#: templates/cosmdl-error-pages.php:324
+msgid "确认文件是否存在且可访问"
+msgstr "确认文件是否存在且可访问"
+
+#: templates/cosmdl-error-pages.php:325
+msgid "检查网盘链接是否有效"
+msgstr "检查网盘链接是否有效"
+
+#: templates/cosmdl-error-pages.php:326
+msgid "联系文件提供者确认资源状态"
+msgstr "联系文件提供者确认资源状态"
+
+#: templates/cosmdl-error-pages.php:330
+msgid "检查网络连接是否正常"
+msgstr "检查网络连接是否正常"
+
+#: templates/cosmdl-error-pages.php:331
+msgid "稍后重试下载操作"
+msgstr "稍后重试下载操作"
+
+#: templates/cosmdl-error-pages.php:332
+msgid "清除浏览器缓存后重试"
+msgstr "清除浏览器缓存后重试"
+
+#: templates/cosmdl-error-pages.php:336
+msgid "刷新页面重试"
+msgstr "刷新页面重试"
+
+#: templates/cosmdl-error-pages.php:337
+msgid "清除浏览器缓存和Cookie"
+msgstr "清除浏览器缓存和Cookie"
+
+#: templates/cosmdl-error-pages.php:338
+msgid "联系技术支持获取帮助"
+msgstr "联系技术支持获取帮助"
+
+#: templates/cosmdl-error-pages.php:347
+msgid "错误代码：%s | 时间：%s"
+msgstr "错误代码：%s | 时间：%s"
+
+#: templates/cosmdl-error-pages.php:354
+msgid "调试模式已启用"
+msgstr "调试模式已启用"
+
+#: templates/cosmdl-error-pages.php:376
+msgid "服务可能已恢复，是否刷新页面重试？"
+msgstr "服务可能已恢复，是否刷新页面重试？"
+
+#: templates/file-tree.php:50
+msgid "文件树（所有分享文件）"
+msgstr "文件树（所有分享文件）"
+
+#: templates/file-tree.php:192
+msgid "分类"
+msgstr "分类"
+
+#: templates/file-tree.php:195
+msgid "全部分类"
+msgstr "全部分类"
+
+#: templates/file-tree.php:199
+msgid "标签"
+msgstr "标签"
+
+#: templates/file-tree.php:200
+msgid "标签 slug"
+msgstr "标签 slug"
+
+#: templates/file-tree.php:204
+msgid "作者"
+msgstr "作者"
+
+#: templates/file-tree.php:207
+msgid "全部作者"
+msgstr "全部作者"
+
+#: templates/file-tree.php:213
+msgid "关键字"
+msgstr "关键字"
+
+#: templates/file-tree.php:214
+msgid "标题或资源名"
+msgstr "标题或资源名"
+
+#: templates/file-tree.php:219
+msgid "大小范围"
+msgstr "大小范围"
+
+#: templates/file-tree.php:220
+msgid "如 50M"
+msgstr "如 50M"
+
+#: templates/file-tree.php:222
+msgid "如 2G"
+msgstr "如 2G"
+
+#: templates/file-tree.php:227
+msgid "单位"
+msgstr "单位"
+
+#: templates/file-tree.php:220
+msgid "全部"
+msgstr "全部"
+
+#: templates/file-tree.php:233
+msgid "类型"
+msgstr "类型"
+
+#: templates/file-tree.php:241
+msgid "排序"
+msgstr "排序"
+
+#: templates/file-tree.php:243
+msgid "按时间"
+msgstr "按时间"
+
+#: templates/file-tree.php:244
+msgid "按标题"
+msgstr "按标题"
+
+#: templates/file-tree.php:245
+msgid "按资源名"
+msgstr "按资源名"
+
+#: templates/file-tree.php:246
+msgid "按更新"
+msgstr "按更新"
+
+#: templates/file-tree.php:247
+msgid "按作者"
+msgstr "按作者"
+
+#: templates/file-tree.php:248
+msgid "按大小"
+msgstr "按大小"
+
+#: templates/file-tree.php:251
+msgid "倒序"
+msgstr "倒序"
+
+#: templates/file-tree.php:252
+msgid "正序"
+msgstr "正序"
+
+#: templates/file-tree.php:257
+msgid "每页显示"
+msgstr "每页显示"
+
+#: templates/file-tree.php:262
+msgid "筛选"
+msgstr "筛选"
+
+#: templates/file-tree.php:384
+msgid "暂无数据"
+msgstr "暂无数据"

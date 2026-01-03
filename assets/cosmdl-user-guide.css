@@ -1,0 +1,468 @@
+/* 
+ * CosmautDL 用户体验增强样式
+ * 包含工具提示、加载动画、用户引导等交互元素
+ */
+
+/* 工具提示样式 */
+.cosmdl-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.cosmdl-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    line-height: 1.4;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cosmdl-tooltip .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.cosmdl-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* 加载动画 */
+.cosmdl-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: cosmdl-spin 1s linear infinite;
+}
+
+@keyframes cosmdl-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.cosmdl-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.cosmdl-loading-content {
+    text-align: center;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.cosmdl-loading-text {
+    margin-top: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 成功/错误消息样式 */
+.cosmdl-message {
+    padding: 12px 16px;
+    margin: 10px 0;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    border-left: 4px solid;
+    animation: cosmdl-slideIn 0.3s ease-out;
+}
+
+@keyframes cosmdl-slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.cosmdl-message-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-left-color: #28a745;
+}
+
+.cosmdl-message-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left-color: #dc3545;
+}
+
+.cosmdl-message-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left-color: #ffc107;
+}
+
+.cosmdl-message-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-left-color: #17a2b8;
+}
+
+/* 用户引导高亮 */
+.cosmdl-highlight {
+    position: relative;
+    z-index: 1000;
+    animation: cosmdl-pulse 2s infinite;
+}
+
+@keyframes cosmdl-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(66, 153, 225, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(66, 153, 225, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(66, 153, 225, 0);
+    }
+}
+
+/* 进度条样式 */
+.cosmdl-progress {
+    width: 100%;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.cosmdl-progress-bar {
+    height: 100%;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+/* 折叠面板样式 */
+.cosmdl-accordion {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin: 10px 0;
+}
+
+.cosmdl-accordion-header {
+    background-color: #f8f9fa;
+    padding: 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.cosmdl-accordion-header:hover {
+    background-color: #e9ecef;
+}
+
+.cosmdl-accordion-header::after {
+    content: "▼";
+    float: right;
+    transition: transform 0.3s;
+}
+
+.cosmdl-accordion-header.collapsed::after {
+    transform: rotate(-90deg);
+}
+
+.cosmdl-accordion-content {
+    padding: 15px;
+    display: none;
+    animation: cosmdl-fadeIn 0.3s ease-in;
+}
+
+@keyframes cosmdl-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 标签页样式 */
+.cosmdl-tabs {
+    margin: 20px 0;
+}
+
+.cosmdl-tab-nav {
+    display: flex;
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+.cosmdl-tab-button {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #6c757d;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.cosmdl-tab-button:hover {
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.cosmdl-tab-button.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: transparent;
+}
+
+.cosmdl-tab-content {
+    display: none;
+    padding: 20px 0;
+}
+
+.cosmdl-tab-content.active {
+    display: block;
+    animation: cosmdl-fadeIn 0.3s ease-in;
+}
+
+/* 模态框样式 */
+.cosmdl-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: cosmdl-fadeIn 0.3s ease-in;
+}
+
+.cosmdl-modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: cosmdl-slideDown 0.3s ease-out;
+}
+
+@keyframes cosmdl-slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cosmdl-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.cosmdl-modal-body {
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.cosmdl-modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+    text-align: right;
+}
+
+.cosmdl-modal-close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.cosmdl-modal-close:hover {
+    color: #495057;
+}
+
+/* 卡片样式增强 */
+.cosmdl-card-enhanced {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.cosmdl-card-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.cosmdl-card-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+}
+
+.cosmdl-card-body {
+    padding: 20px;
+}
+
+.cosmdl-card-footer {
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .cosmdl-tooltip .tooltip-text {
+        width: 150px;
+        margin-left: -75px;
+        font-size: 11px;
+    }
+    
+    .cosmdl-modal-content {
+        width: 95%;
+        margin: 2% auto;
+    }
+    
+    .cosmdl-tab-nav {
+        flex-wrap: wrap;
+    }
+    
+    .cosmdl-tab-button {
+        flex: 1;
+        min-width: 100px;
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .cosmdl-accordion-header {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .cosmdl-accordion-content {
+        padding: 12px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cosmdl-modal-content {
+        width: 98%;
+        margin: 1% auto;
+    }
+    
+    .cosmdl-modal-header,
+    .cosmdl-modal-body,
+    .cosmdl-modal-footer {
+        padding: 15px;
+    }
+    
+    .cosmdl-card-header,
+    .cosmdl-card-body,
+    .cosmdl-card-footer {
+        padding: 15px;
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    .cosmdl-message {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .cosmdl-message-success {
+        background-color: #22543d;
+        color: #9ae6b4;
+        border-left-color: #38a169;
+    }
+    
+    .cosmdl-message-error {
+        background-color: #742a2a;
+        color: #feb2b2;
+        border-left-color: #e53e3e;
+    }
+    
+    .cosmdl-message-warning {
+        background-color: #744210;
+        color: #fbd38d;
+        border-left-color: #d69e2e;
+    }
+    
+    .cosmdl-message-info {
+        background-color: #2a4365;
+        color: #90cdf4;
+        border-left-color: #4299e1;
+    }
+    
+    .cosmdl-accordion-header {
+        background-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .cosmdl-accordion-header:hover {
+        background-color: #2d3748;
+    }
+    
+    .cosmdl-card-enhanced {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .cosmdl-card-footer {
+        background-color: #4a5568;
+        border-top-color: #718096;
+    }
+    
+    .cosmdl-modal-content {
+        background-color: #2d3748;
+        color: #e2e8f0;
+    }
+    
+    .cosmdl-modal-footer {
+        border-top-color: #4a5568;
+    }
+}

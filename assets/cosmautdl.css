@@ -1,0 +1,1060 @@
+/* 
+ * cosmautdl 核心样式表
+ * 
+ * 目录索引：
+ * 1.  重置与基础设置 (Reset & Base)
+ * 2.  全局变量定义 (Variables)
+ * 3.  通用工具类 (Utilities)
+ * 4.  通用区块组件 (Section Component)
+ * 5.  下载卡片组件 (Card Component)
+ * 6.  网盘按钮组 (Button Group)
+ * 7.  暗色模式适配 (Dark Mode)
+ * 8.  响应式布局 (Responsive)
+ */
+
+/* ==========================================================================
+   1. 重置与基础设置 (Reset & Base)
+   ========================================================================== */
+/* 统一盒模型，确保内边距和边框不影响宽度 */
+.cosmdl-section, .cosmdl-card, .cosmdl-pan-btn, .cosmdl-download-btn {
+  box-sizing: border-box;
+}
+
+/* 继承盒模型设置 */
+.cosmdl-section *, .cosmdl-section *::before, .cosmdl-section *::after,
+.cosmdl-card *, .cosmdl-card *::before, .cosmdl-card *::after {
+  box-sizing: inherit;
+}
+
+/* 列表样式重置：内部位置，左侧内边距 */
+.cosmdl-section ul, .cosmdl-section ol,
+.cosmdl-card ul, .cosmdl-card ol {
+  list-style-position: inside;
+  padding-left: 1rem;
+  margin: 0 0 1rem 0;
+}
+
+/* 强制隐藏空 P 标签，防止 wpautop 产生多余间距 */
+.cosmdl-section p:empty,
+.cosmdl-card p:empty,
+.cosmdl-download-wrap > p:empty,
+.cosmdl-meta p:empty {
+  display: none !important;
+}
+
+/* 移除图片默认边距，防止主题样式干扰 */
+.cosmdl-pan-logo {
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none;
+}
+
+/* 按钮基础重置：移除默认边框、背景，继承字体 */
+.cosmdl-pan-btn, .cosmdl-download-btn {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: none;
+  outline: none;
+  background: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* ==========================================================================
+   2. 全局变量定义 (Variables)
+   ========================================================================== */
+:root {
+  /* 主色调：绿色系 */
+  --cosmdl-primary: #22c55e;
+  --cosmdl-primary-600: #16a34a;
+  --cosmdl-primary-700: #15803d;
+  /* 主题色RGB（用于卡片头部渐变），默认绿色 */
+  --cosmdl-theme-rgb: 34,197,94;
+  
+  /* 背景与边框 */
+  --cosmdl-bg: #ffffff;
+  --cosmdl-border: #e5e7eb;
+  
+  /* 文本颜色 */
+  --cosmdl-text: #111827;
+  --cosmdl-muted: #6b7280;
+}
+
+/* 暗色模式变量覆盖 */
+html.dark, [data-theme="dark"] {
+  --cosmdl-bg: #0b0f19;
+  --cosmdl-border: #1f2937;
+  --cosmdl-text: #e5e7eb;
+  --cosmdl-muted: #9ca3af;
+}
+
+/* ==========================================================================
+   3. 通用工具类 (Utilities)
+   ========================================================================== */
+/* 顶部间距工具 */
+.cosmdl-mt-10 { margin-top: 10px; }
+.cosmdl-mt-15 { margin-top: 15px; }
+.cosmdl-mt-25 { margin-top: 25px; }
+
+/* 链接样式 */
+.cosmdl-link {
+  color: var(--cosmdl-primary-600);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.cosmdl-link:hover {
+  color: var(--cosmdl-primary-700);
+  text-decoration: underline;
+}
+
+/* 代码风格徽章（用于URL显示等） */
+.cosmdl-url {
+  display: inline-block;
+  margin-left: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  color: var(--cosmdl-muted);
+  background: rgba(34,197,94,0.08);
+  border: 1px dashed rgba(34,197,94,0.22);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* ==========================================================================
+   4. 通用区块组件 (Section Component)
+   ========================================================================== */
+/* 区块容器 */
+.cosmdl-section {
+  background: var(--cosmdl-bg);
+  border: 1px solid var(--cosmdl-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+  margin: 0 0 15px 0;
+  position: relative;
+  width: 100%;
+  line-height: 1.6;
+}
+
+/* 区块标题：使用 !important 覆盖主题样式 */
+.cosmdl-section .cosmdl-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--cosmdl-text);
+  margin: 0 0 12px 0 !important;
+  padding: 0 !important;
+  line-height: 1.4;
+}
+
+.cosmdl-section p {
+  margin: 0 !important;
+  font-size: inherit !important;
+  color: var(--cosmdl-text);
+  line-height: inherit !important;
+}
+
+/* 中文注释：通过下载页容器 ID 进一步提高优先级，确保不被主题正文排版覆盖 */
+#cosmdl-download-wrap p {
+  margin: 0 !important;
+}
+
+/* 中文注释：对“下载声明”模块做双 ID 加权，确保段落 margin 一定为 0（修复卡片高度不一致） */
+#cosmdl-download-wrap #cosmdl-statement-preview p {
+  margin: 0 !important;
+}
+
+/* 中文注释：提高选择器优先级，强制覆盖主题对段落 margin 的 !important 设定 */
+.cosmdl-section.cosmdl-section p {
+  margin: 0 !important;
+  font-size: inherit !important;
+  color: var(--cosmdl-text);
+  line-height: inherit !important;
+}
+
+/* 中文注释：前台下载页在部分主题下会对 .entry-content p 强制加 margin，这里进一步加权覆盖 */
+.entry-content .cosmdl-download-wrap .cosmdl-section p {
+  margin: 0 !important;
+  font-size: inherit !important;
+  color: var(--cosmdl-text);
+  line-height: inherit !important;
+}
+
+.cosmdl-section p + p {
+  margin-top: 8px;
+}
+
+/* 统一预览卡片样式 */
+.cosmdl-preview-card {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* 区块内容排版 - 统一预览内容样式 */
+.cosmdl-preview-card .cosmdl-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.cosmdl-preview-card .cosmdl-section p {
+  margin: 0 !important;
+  font-size: inherit !important;
+  color: var(--cosmdl-text);
+  line-height: inherit !important;
+}
+
+.cosmdl-preview-card .cosmdl-section ul, 
+.cosmdl-preview-card .cosmdl-section ol {
+  margin: 8px 0 8px 20px;
+  padding: 0;
+}
+
+.cosmdl-preview-card .cosmdl-section ul:last-child,
+.cosmdl-preview-card .cosmdl-section ol:last-child {
+  margin-bottom: 0;
+}
+
+.cosmdl-preview-card .cosmdl-section li {
+  margin-bottom: 6px;
+  color: var(--cosmdl-text);
+  line-height: 1.6;
+}
+
+.cosmdl-preview-card .cosmdl-section li:last-child {
+  margin-bottom: 0;
+}
+
+.cosmdl-preview-card .cosmdl-section a {
+  color: var(--cosmdl-primary-600);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.cosmdl-preview-card .cosmdl-section a:hover {
+  color: var(--cosmdl-primary-700);
+  text-decoration: underline;
+}
+
+/* 移除最后一个子元素的底部边距 */
+.cosmdl-section > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* 中文注释：移除第一个子元素的顶部边距，避免出现“上大下小”的视觉不对称（后台实时预览/前台卡片通用） */
+.cosmdl-section > *:first-child {
+  margin-top: 0 !important;
+}
+
+/* 自定义链接区域 (动态 Grid 布局) */
+.cosmdl-custom-links {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  padding: 16px;
+}
+
+/* 自定义链接标题包装器 - 标题单独占一行 */
+.cosmdl-custom-links-title-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+/* 自定义链接标题样式 */
+.cosmdl-custom-links-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--cosmdl-text);
+  text-align: left;
+  width: 100%;
+}
+
+.cosmdl-section.cosmdl-custom-links .cosmdl-custom-links-title-wrapper {
+  justify-content: flex-start !important;
+}
+
+.cosmdl-section.cosmdl-custom-links .cosmdl-custom-links-title {
+  text-align: left !important;
+}
+
+/* 自定义链接内容包装器 - 四个链接占一行 */
+.cosmdl-custom-links-content-wrapper {
+  display: grid;
+  /* 根据变量 --cosmdl-link-count 自动分配等宽列 */
+  grid-template-columns: repeat(var(--cosmdl-link-count, 1), 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+/* 自定义链接项容器 */
+.cosmdl-custom-link-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* 自定义链接文本 */
+.cosmdl-custom-links .cosmdl-link {
+  text-align: center;
+  font-weight: 500;
+  padding: 0 2px;
+  border-radius: 6px;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  transition: all 0.2s ease;
+}
+
+.cosmdl-custom-links .cosmdl-link:hover {
+  background: rgba(34,197,94,0.08);
+  text-decoration: none;
+}
+
+/* ==========================================================================
+   5. 下载卡片组件 (Card Component)
+   ========================================================================== */
+/* 卡片容器 */
+.cosmdl-card {
+  background: var(--cosmdl-bg);
+  border: 1px solid var(--cosmdl-border);
+  border-radius: var(--cosmdl-card-radius, 12px);
+  box-shadow: var(--cosmdl-card-shadow, 0 2px 16px rgba(0,0,0,0.06));
+  overflow: hidden;
+  margin: 0 0 15px 0;
+}
+
+/* 卡片头部 */
+.cosmdl-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(90deg, rgba(var(--cosmdl-theme-rgb, 34,197,94),0.08), rgba(var(--cosmdl-theme-rgb, 34,197,94),0.02));
+  border-bottom: 1px solid var(--cosmdl-border);
+}
+
+.cosmdl-card-icon {
+  font-size: 18px;
+}
+
+.cosmdl-card-title {
+  font-weight: 600;
+  color: var(--cosmdl-text);
+}
+
+/* 卡片主体：网格布局 */
+.cosmdl-card-body {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 0px;
+  padding: 16px;
+}
+
+/* 无侧边栏模式 */
+.cosmdl-card-body.no-aside {
+  grid-template-columns: 1fr !important;  /* 确保使用单列布局 */
+}
+
+/* 元信息列表 */
+.cosmdl-meta p {
+  margin: 6px 0;
+  color: var(--cosmdl-text);
+}
+
+.cosmdl-meta span {
+  color: var(--cosmdl-muted);
+}
+
+/* 侧边栏容器 */
+.cosmdl-aside-inner {
+  border: 1px dashed var(--cosmdl-border);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* 广告位全宽样式 */
+.cosmdl-ad-slot.cosmdl-ad-full-width {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.cosmdl-ad-container {
+  width: 100%;
+}
+
+.cosmdl-ad-container * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* 仅在广告容器内，移除主题为标题添加的装饰条（如 Puock 的 ::before 蓝色杠） */
+.cosmdl-ad-container::before,
+.cosmdl-aside-inner::before,
+.cosmdl-ad-container h1::before,
+.cosmdl-ad-container h2::before,
+.cosmdl-ad-container h3::before,
+.cosmdl-ad-container h4::before,
+.cosmdl-ad-container h5::before,
+.cosmdl-ad-container h6::before,
+.cosmdl-aside-inner h1::before,
+.cosmdl-aside-inner h2::before,
+.cosmdl-aside-inner h3::before,
+.cosmdl-aside-inner h4::before,
+.cosmdl-aside-inner h5::before,
+.cosmdl-aside-inner h6::before,
+.cosmdl-ad-container *::before {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: none !important;
+  border: 0 !important;
+}
+
+/* 同时屏蔽可能使用 ::after 的装饰条 */
+.cosmdl-ad-container::after,
+.cosmdl-aside-inner::after,
+.cosmdl-ad-container h1::after,
+.cosmdl-ad-container h2::after,
+.cosmdl-ad-container h3::after,
+.cosmdl-ad-container h4::after,
+.cosmdl-ad-container h5::after,
+.cosmdl-ad-container h6::after,
+.cosmdl-aside-inner h1::after,
+.cosmdl-aside-inner h2::after,
+.cosmdl-aside-inner h3::after,
+.cosmdl-aside-inner h4::after,
+.cosmdl-aside-inner h5::after,
+.cosmdl-aside-inner h6::after,
+.cosmdl-ad-container *::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Puock 主题特有标题样式兼容（移除广告容器内的蓝色标题线） */
+.cosmdl-ad-container .t-lg::before,
+.cosmdl-aside-inner .t-lg::before,
+.cosmdl-ad-container .p-block::before,
+.cosmdl-aside-inner .p-block::before,
+.cosmdl-ad-container .pk-title::before,
+.cosmdl-aside-inner .pk-title::before {
+  content: none !important;
+  display: none !important;
+}
+
+/* 防止因主题为标题线预留的左内边距影响版式，仅限广告容器区域 */
+.cosmdl-ad-container .t-lg,
+.cosmdl-aside-inner .t-lg,
+.cosmdl-ad-container .pk-title,
+.cosmdl-aside-inner .pk-title {
+  padding-left: 0 !important;
+}
+
+/* 取消可能用于配合装饰条的额外内边距/偏移，仅限广告容器 */
+.cosmdl-ad-container h1,
+.cosmdl-ad-container h2,
+.cosmdl-ad-container h3,
+.cosmdl-ad-container h4,
+.cosmdl-ad-container h5,
+.cosmdl-ad-container h6,
+.cosmdl-aside-inner h1,
+.cosmdl-aside-inner h2,
+.cosmdl-aside-inner h3,
+.cosmdl-aside-inner h4,
+.cosmdl-aside-inner h5,
+.cosmdl-aside-inner h6 {
+  padding-left: 0 !important;
+  margin-top: 0.25rem; /* 微调，避免出现孤立装饰条后的大间距 */
+}
+
+/* 广告位内部标题样式重置，移除主题的蓝色杠 */
+.cosmdl-ad-container h4 {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* ==========================================================================
+   6. 网盘按钮组 (Button Group)
+   ========================================================================== */
+/* 按钮组网格：4列 */
+.cosmdl-pan-group {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* 网盘按钮 */
+.cosmdl-pan-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 5px 5px;
+  border-radius: 10px;
+  border: 1px solid rgba(34,197,94,0.45);
+  color: var(--cosmdl-primary-700);
+  background: rgba(34,197,94,0.08);
+  min-height: 80px;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+}
+
+/* 悬停状态 */
+.cosmdl-pan-btn:hover {
+  background: rgba(34,197,94,0.15);
+  border-color: rgba(34,197,94,0.65);
+  box-shadow: 0 6px 20px rgba(34,197,94,0.18);
+  transform: translateY(-1px);
+}
+
+/* 点击状态 */
+.cosmdl-pan-btn:active {
+  transform: translateY(0);
+}
+
+.cosmdl-pan-btn-locked {
+  border-color: #d1d5db;
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: pointer;
+  overflow: hidden;
+  user-select: none;
+}
+
+.cosmdl-pan-btn-locked:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+  box-shadow: none;
+  transform: none;
+}
+
+.cosmdl-pan-btn-locked > * {
+  position: relative;
+  z-index: 0;
+  filter: blur(1.2px);
+  opacity: 0.85;
+}
+
+.cosmdl-pan-btn-locked::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 网盘 LOGO */
+.cosmdl-pan-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* 按钮文本信息容器 */
+.cosmdl-pan-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* 网盘名称 */
+.cosmdl-pan-text {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+/* 提取码徽章 */
+.cosmdl-pan-pwd {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--cosmdl-primary-700);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: 4px;
+  padding: 1px 1px;
+  background-color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.cosmdl-pan-btn-locked::after {
+  content: "🔒";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  line-height: 1;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(2, 6, 23, 0.35);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* 独立徽章（通用） */
+.cosmdl-pan-btn .code-badge {
+  margin-left: 6px;
+  font-size: 12px;
+  color: var(--cosmdl-muted);
+  background: rgba(34,197,94,0.08);
+  border: 1px dashed rgba(34,197,94,0.22);
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* 主下载按钮 */
+.cosmdl-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(34,197,94,0.45);
+  color: #fff;
+  background: linear-gradient(180deg, #22c55e, #16a34a);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.cosmdl-download-btn:hover {
+  box-shadow: 0 8px 30px rgba(34,197,94,0.28);
+  transform: translateY(-1px);
+}
+
+.cosmdl-download-btn:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   7. 暗色模式适配 (Dark Mode)
+   ========================================================================== */
+/* 区块阴影 */
+html.dark .cosmdl-section, [data-theme="dark"] .cosmdl-section {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* 卡片边框与头部 */
+html.dark .cosmdl-card-header {
+  border-bottom-color: var(--cosmdl-border);
+}
+
+html.dark .cosmdl-aside-inner {
+  border-color: var(--cosmdl-border);
+}
+
+/* 链接徽章 */
+html.dark .cosmdl-url {
+  background: rgba(34,197,94,0.08);
+  border-color: rgba(34,197,94,0.22);
+  color: var(--cosmdl-muted);
+}
+
+/* 网盘按钮 */
+html.dark .cosmdl-pan-btn {
+  color: #a7f3d0;
+  border-color: rgba(34,197,94,0.35);
+}
+
+html.dark .cosmdl-pan-btn:hover {
+  background: rgba(34,197,94,0.18);
+}
+
+.cosmdl-qr-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.18s ease, visibility 0s linear 0.18s;
+}
+
+.cosmdl-qr-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.18s ease, visibility 0s linear 0s;
+}
+
+.cosmdl-qr-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.cosmdl-qr-modal-dialog {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 0;
+  max-width: 440px;
+  width: min(92vw, 440px);
+  box-shadow: 0 28px 90px rgba(2, 6, 23, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  overflow: hidden;
+  transform: translateY(6px) scale(0.98);
+  transition: transform 0.18s ease;
+}
+
+.cosmdl-qr-modal.is-open .cosmdl-qr-modal-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.cosmdl-qr-modal-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.cosmdl-qr-modal-close::before {
+  content: "×";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 22px;
+  line-height: 1;
+  transform: translateY(-0.5px);
+}
+
+.cosmdl-qr-modal-close:hover {
+  background: rgba(255, 255, 255, 0.32);
+  transform: scale(1.03);
+}
+
+.cosmdl-qr-unlock {
+  padding: 0;
+}
+
+.cosmdl-qr-heading {
+  padding: 18px 20px;
+  margin: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(var(--cosmdl-theme-rgb), 1) 0%, rgba(59, 130, 246, 1) 100%);
+  text-align: left;
+}
+
+.cosmdl-qr-heading strong {
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.cosmdl-qr-body {
+  display: flex;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.cosmdl-qr-image {
+  flex-shrink: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: #ffffff;
+  box-shadow: 0 10px 22px rgba(2, 6, 23, 0.10);
+  pointer-events: none;
+}
+
+.cosmdl-qr-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--cosmdl-text);
+}
+
+.cosmdl-qr-text p {
+  margin: 0 !important;
+}
+
+.cosmdl-qr-text p + p {
+  margin-top: 8px !important;
+}
+
+.cosmdl-qr-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 20px 18px;
+  font-size: 13px;
+  color: #92400e;
+  background: #fffbeb;
+  border-top: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.cosmdl-qr-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.cosmdl-qr-status[data-status="done"] {
+  color: #166534;
+  background: #ecfdf5;
+  border-top-color: rgba(34, 197, 94, 0.25);
+}
+
+html.dark .cosmdl-qr-modal-dialog, [data-theme="dark"] .cosmdl-qr-modal-dialog {
+  background: #0b0f19;
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+html.dark .cosmdl-qr-text, [data-theme="dark"] .cosmdl-qr-text {
+  color: var(--cosmdl-text);
+}
+
+@media (max-width: 480px) {
+  .cosmdl-qr-body {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* 主下载按钮 */
+html.dark .cosmdl-download-btn {
+  color: #052e1b;
+}
+
+/* ==========================================================================
+   8. 响应式布局 (Responsive)
+   ========================================================================== */
+/* 主内容区域（保留原有结构，用于大屏布局） */
+.cosmdl-main-content {
+  width: 100%;
+}
+
+/* 平板设备：主内容区域 */
+@media (min-width: 992px) {
+  .cosmdl-main-content {
+      /* 大屏适配预留 */
+  }
+}
+
+/* 移动端设备（小于768px） */
+@media (max-width: 768px) {
+  .cosmdl-section {
+      padding: 14px;
+  }
+  
+  .cosmdl-section .cosmdl-section-title,
+  .cosmdl-preview-card .cosmdl-section-title {
+      font-size: 15px;
+  }
+  
+  /* 卡片主体转为单列 */
+  .cosmdl-card-body {
+      grid-template-columns: 1fr;
+  }
+  
+  /* 按钮组转为2列 */
+  .cosmdl-pan-group {
+      grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* 自定义链接在小屏下允许换行（可选），若坚持“以此类推”则保持 Grid */
+  /* 为防止过多列挤压，这里设置最大列数回退逻辑：若超过2个，移动端显示为2列 */
+  /* 注意：由于 Grid repeat 使用的是 var，这里无法简单覆盖 var 值，只能重写 grid-template-columns */
+  .cosmdl-custom-links {
+      /* 如果链接数 > 2，强制在移动端改为 2 列布局，避免过窄 */
+      /* 这里使用 min() 函数来取 count 和 2 的较小值作为列数（假设 CSS 支持计算，或者简单点直接覆盖） */
+      /* 考虑到兼容性，这里使用一个媒体查询策略：如果链接很多，手机上改为单列或双列 */
+  }
+}
+
+/* 小屏移动端（小于480px） */
+@media (max-width: 480px) {
+  .cosmdl-section {
+      padding: 12px;
+      border-radius: 6px;
+  }
+  
+  .cosmdl-section .cosmdl-section-title,
+  .cosmdl-preview-card .cosmdl-section-title {
+      font-size: 14px;
+  }
+  
+  /* 按钮组转为1列 */
+  .cosmdl-pan-group {
+      grid-template-columns: 1fr;
+  }
+
+  /* 极小屏下自定义链接强制单列 */
+  .cosmdl-custom-links {
+      grid-template-columns: 1fr !important;
+  }
+}
+
+/* ==========================================================================
+   9. 广告位样式 (Ad Slot Styles)
+   ========================================================================== */
+/* 广告位容器 - 位于文件信息卡片底部 */
+.cosmdl-ad-slot {
+  margin-top: 0px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--cosmdl-border);
+}
+
+/* 广告位内容容器 */
+.cosmdl-ad-container {
+  text-align: center;
+  /* 确保广告内容不会破坏卡片布局 */
+  overflow: hidden;
+  word-wrap: break-word;
+}
+
+/* 广告位响应式适配 */
+.cosmdl-ad-container img,
+.cosmdl-ad-container iframe,
+.cosmdl-ad-container video,
+.cosmdl-ad-container embed {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+/* 确保广告文本不会过大 */
+.cosmdl-ad-container p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 广告位悬停效果（可选） */
+.cosmdl-ad-container a {
+  transition: opacity 0.2s ease;
+}
+
+.cosmdl-ad-container a:hover {
+  opacity: 0.8;
+}
+
+/* 暗色模式下的广告位边框调整 */
+html.dark .cosmdl-ad-slot {
+  border-top-color: rgba(156, 163, 175, 0.3);
+}
+
+/* ==========================================================================
+   10. 管理页面颜色输入框样式 (Admin Color Input Styles)
+   ========================================================================== */
+/* 颜色输入框容器样式（对齐旧版本外观：更宽一些，取消边框） */
+.cosmdl-color-input {
+      width: 60px;
+      height: 30px;
+      margin-right: 8px;
+      vertical-align: middle;
+      /* 核心：四个方向边框完全统一 */
+      border: 1px solid #d1d5db;
+      border-width: 1px; /* 显式声明统一宽度，避免意外覆盖 */
+      border-radius: 4px;
+      outline: none;
+      /* 背景与阴影 */
+      background: linear-gradient(to bottom, #f9fafb, #e5e7eb);
+      box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 1px 2px rgba(15, 23, 42, 0.15);
+      /* 交互与兼容 */
+      cursor: pointer;
+      transition: all 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      padding: 0;
+    }
+
+    .cosmdl-color-input:hover {
+      border-color: #94a3b8;
+      box-shadow: 
+        0 1px 0 rgba(255, 255, 255, 0.8) inset,
+        0 2px 4px rgba(15, 23, 42, 0.2);
+      background: linear-gradient(to bottom, #ffffff, #f1f5f9);
+    }
+
+    .cosmdl-color-input:focus {
+      border-color: #3b82f6;
+      box-shadow: 
+        0 0 0 2px rgba(59, 130, 246, 0.2),
+        0 1px 0 rgba(255, 255, 255, 0.8) inset;
+    }
+
+/* 十六进制颜色值输入框样式 */
+.cosmdl-color-hex-input {
+  width: 100px !important;
+  max-width: 100px !important;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 13px;
+  vertical-align: middle;
+  box-sizing: border-box !important;
+}
+
+/* 颜色输入框容器布局 */
+.cosmdl-module__kv label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  margin-right: 10px;
+}
+
+/* 确保颜色选择器和文本输入框在同一行对齐 */
+.cosmdl-module__kv label .cosmdl-color-input,
+.cosmdl-module__kv label .cosmdl-color-hex-input {
+  flex-shrink: 0;
+}
+
+/* 十六进制输入框聚焦状态 */
+.cosmdl-color-hex-input:focus {
+  border-color: var(--cosmdl-primary-600);
+  box-shadow: 0 0 0 1px var(--cosmdl-primary-600);
+  outline: none;
+}
+
