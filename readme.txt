@@ -128,7 +128,7 @@ CosmautDL is primarily tested on single-site installations. For multisite, pleas
 == Changelog ==
 
 = 1.0.3 =
-* 2026-01-03 Smart recognition of cloud drive links in the editor meta box.（编辑器网盘链接智能识别）
+* 2026-0103 Smart recognition of cloud drive links in the editor meta box.（编辑器网盘链接智能识别）
 
 = 1.0.2 =
-* 2026-01-02 Initial release with download page, file tree, and click statistics.
+* 2026-0102 Initial release with download page, file tree, and click statistics.
