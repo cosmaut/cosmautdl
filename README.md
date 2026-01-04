@@ -26,7 +26,7 @@ CosmautDL 是一款功能强大的 WordPress 下载管理插件，支持多网�
 ## 快速入口
 
 | 🏠 [插件主页](https://cosmaut.com/cosmautdl/) | 📖 [使用文档](https://cosmaut.com/cosmautdl/docs/) | ❓ [常见问题](https://cosmaut.com/cosmautdl/faq/) |
-|---|---|---|
+|:---:|:---:|:---:|
 | 🐞 [BUG反馈](https://cosmaut.com/cosmautdl/feedback/) | 💬 [交流群](https://cosmaut.com/cosmautdl/group/) | ❤️ [赞助我们](https://cosmaut.com/cosmautdl/sponsor/) |
 | ⭐ [GitHub](https://github.com/cosmaut/cosmautdl) | 🧩 [WordPress 插件目录](https://cn.wordpress.org/plugins/search/cosmautdl) | ⬇️ [插件下载页](https://cosmaut.com/cosmautdl-plugin.html) |
 
