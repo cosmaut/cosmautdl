@@ -143,11 +143,14 @@ html.dark, [data-theme="dark"] {
 .cosmdl-section .cosmdl-section-title {
   font-size: 16px;
   font-weight: 600;
-  color: var(--cosmdl-text);
+  color: var(--cosmdl-title, var(--cosmdl-text));
   margin: 0 0 12px 0 !important;
   padding: 0 !important;
   line-height: 1.4;
 }
+
+.cosmdl-links{display:inline-flex;flex-wrap:wrap;gap:6px 8px}
+.cosmdl-sep{color:#999}
 
 .cosmdl-section p {
   margin: 0 !important;
@@ -1058,3 +1061,307 @@ html.dark .cosmdl-ad-slot {
   outline: none;
 }
 
+/* ==========================================================================
+   11. 错误页模板样式 (Error Page)
+   ========================================================================== */
+.cosmdl-error-body {
+  --cosmdl-error-accent: #6f42c1;
+  --cosmdl-error-accent-rgb: 111,66,193;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.cosmdl-error-body.cosmdl-error-code-invalid_params {
+  --cosmdl-error-accent: #ffc107;
+  --cosmdl-error-accent-rgb: 255,193,7;
+}
+
+.cosmdl-error-body.cosmdl-error-code-download_not_found {
+  --cosmdl-error-accent: #dc3545;
+  --cosmdl-error-accent-rgb: 220,53,69;
+}
+
+.cosmdl-error-body.cosmdl-error-code-network_error {
+  --cosmdl-error-accent: #17a2b8;
+  --cosmdl-error-accent-rgb: 23,162,184;
+}
+
+.cosmdl-error-body.cosmdl-error-code-permission_denied {
+  --cosmdl-error-accent: #6c757d;
+  --cosmdl-error-accent-rgb: 108,117,125;
+}
+
+.cosmdl-error-body.cosmdl-error-code-service_unavailable {
+  --cosmdl-error-accent: #fd7e14;
+  --cosmdl-error-accent-rgb: 253,126,20;
+}
+
+.cosmdl-error-body.cosmdl-error-code-unknown_error {
+  --cosmdl-error-accent: #6f42c1;
+  --cosmdl-error-accent-rgb: 111,66,193;
+}
+
+.cosmdl-error-container {
+  max-width: 600px;
+  width: 100%;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: cosmdlErrorFadeInUp 0.6s ease-out;
+}
+
+@keyframes cosmdlErrorFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cosmdl-error-header {
+  padding: 40px 30px;
+  text-align: center;
+  border-bottom: 1px solid #e9ecef;
+  background: linear-gradient(135deg, var(--cosmdl-error-accent) 0%, rgba(255,255,255,0.1) 100%);
+}
+
+.cosmdl-error-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: cosmdlErrorBounce 2s infinite;
+}
+
+@keyframes cosmdlErrorBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.cosmdl-error-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: #2c3e50;
+}
+
+.cosmdl-error-body-inner {
+  padding: 40px 30px;
+}
+
+.cosmdl-error-description {
+  font-size: 1.1rem;
+  color: #7f8c8d;
+  margin: 0 0 30px;
+  text-align: center;
+}
+
+.cosmdl-error-details {
+  background: #f8f9fa;
+  border-left: 4px solid var(--cosmdl-error-accent);
+  padding: 15px 20px;
+  margin: 20px 0;
+  border-radius: 0 8px 8px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+}
+
+.cosmdl-error-pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 10px 0 0;
+}
+
+.cosmdl-error-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 30px;
+}
+
+.cosmdl-error-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.cosmdl-error-btn-primary {
+  background: linear-gradient(135deg, var(--cosmdl-error-accent) 0%, rgba(var(--cosmdl-error-accent-rgb), 0.8) 100%);
+  color: #fff;
+}
+
+.cosmdl-error-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.cosmdl-error-btn-secondary {
+  background: #6c757d;
+  color: #fff;
+}
+
+.cosmdl-error-btn-secondary:hover {
+  background: #5a6268;
+}
+
+.cosmdl-error-pulse {
+  animation: cosmdlErrorPulse 2s infinite;
+}
+
+@keyframes cosmdlErrorPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--cosmdl-error-accent-rgb), 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--cosmdl-error-accent-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--cosmdl-error-accent-rgb), 0);
+  }
+}
+
+.cosmdl-error-footer {
+  padding: 20px 30px;
+  background: #f8f9fa;
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.cosmdl-error-debug {
+  font-size: 0.8rem;
+  color: #999;
+  margin: 10px 0 0;
+}
+
+@media (max-width: 768px) {
+  .cosmdl-error-container {
+    margin: 10px;
+  }
+
+  .cosmdl-error-header {
+    padding: 30px 20px;
+  }
+
+  .cosmdl-error-body-inner {
+    padding: 30px 20px;
+  }
+
+  .cosmdl-error-actions {
+    flex-direction: column;
+  }
+
+  .cosmdl-error-btn {
+    width: 100%;
+  }
+}
+
+.cosmdl-hidden{display:none!important}
+
+#cosmdl-post-meta-boxes .hndle{display:flex;align-items:center;gap:8px}
+
+#cosmdl-metabox{padding-top:6px}
+
+#cosmdl-metabox .cosmdl-tabs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+
+#cosmdl-metabox .cosmdl-tab,
+#cosmdl-metabox .cosmdl-tab-add{border:1px solid #c3c4c7;background:#f6f7f7;color:#1d2327;border-radius:4px;padding:6px 10px;cursor:pointer;line-height:1.2}
+
+#cosmdl-metabox .cosmdl-tab{position:relative;display:inline-flex;align-items:center;gap:6px}
+
+#cosmdl-metabox .cosmdl-tab.active{background:#fff}
+
+#cosmdl-metabox .cosmdl-tab .tab-bottom-cover{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:#fff;pointer-events:none}
+
+#cosmdl-metabox .cosmdl-tab-close{margin-left:6px;color:#8c8f94;font-size:16px;line-height:1;cursor:pointer;user-select:none}
+
+#cosmdl-metabox .cosmdl-tab-add{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+
+#cosmdl-metabox .general-row{display:flex;align-items:flex-start;gap:10px;margin:10px 0}
+
+#cosmdl-metabox .cosmdl-field-label{width:100px;min-width:100px;padding-top:6px;box-sizing:border-box}
+
+#cosmdl-metabox .general-input{flex:1;min-width:0;max-width:540px}
+
+#cosmdl-metabox .general-input.select-input{max-width:160px}
+
+#cosmdl-metabox .cosmdl-size-unit{max-width:90px}
+
+#cosmdl-metabox .drive-row{display:flex;align-items:flex-start;gap:10px;margin:10px 0;flex-wrap:wrap}
+
+#cosmdl-metabox .cosmdl-drive-input-wrap{position:relative;flex:1;min-width:240px;max-width:540px}
+
+#cosmdl-metabox .cosmdl-drive-icon{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:20px;height:20px;z-index:1}
+
+#cosmdl-metabox .url-input{width:100%;padding:0 8px 0 34px;height:30px;box-sizing:border-box}
+
+#cosmdl-metabox .short-input{width:80px;padding:0 8px;height:30px;box-sizing:border-box}
+
+#cosmdl-metabox .inline{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+#cosmdl-metabox .inline-text{padding-top:6px}
+
+#cosmdl-metabox .cosmdl-switch{position:relative;display:inline-block;width:42px;height:22px;vertical-align:middle}
+
+#cosmdl-metabox .cosmdl-switch input{opacity:0;width:0;height:0}
+
+#cosmdl-metabox .cosmdl-slider{position:absolute;inset:0;cursor:pointer;background:#c3c4c7;border-radius:999px;transition:all .2s ease}
+
+#cosmdl-metabox .cosmdl-slider:before{content:"";position:absolute;height:18px;width:18px;left:2px;top:2px;background:#fff;border-radius:50%;transition:all .2s ease;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+
+#cosmdl-metabox .cosmdl-switch input:checked + .cosmdl-slider{background:#22c55e}
+
+#cosmdl-metabox .cosmdl-switch input:checked + .cosmdl-slider:before{transform:translateX(20px)}
+
+#cosmdl-metabox .cosmdl-smart-wrap{flex:1;min-width:0;max-width:540px}
+
+#cosmdl-metabox .cosmdl-smart-input{width:100%;box-sizing:border-box;resize:vertical}
+
+#cosmdl-metabox .cosmdl-smart-actions{display:flex;gap:8px;margin-top:6px}
+
+#cosmdl-metabox .cosmdl-smart-tip{margin-top:6px;font-size:12px;color:#646970}
+
+#cosmdl-metabox .cosmdl-delete-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:20px;z-index:100000}
+
+#cosmdl-metabox .cosmdl-delete-modal.is-visible{display:flex}
+
+#cosmdl-metabox .cosmdl-delete-modal-content{background:#fff;border-radius:8px;max-width:520px;width:100%;box-shadow:0 10px 28px rgba(0,0,0,.2)}
+
+#cosmdl-metabox .cosmdl-delete-modal-header{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #dcdcde}
+
+#cosmdl-metabox .cosmdl-delete-modal-title{margin:0;font-size:16px}
+
+#cosmdl-metabox .cosmdl-delete-modal-message{padding:14px 16px;color:#1d2327}
+
+#cosmdl-metabox .cosmdl-delete-modal-buttons{display:flex;gap:10px;justify-content:flex-end;padding:0 16px 16px}
+
+#cosmdl-metabox .cosmdl-delete-modal-btn{border:1px solid #c3c4c7;background:#f6f7f7;color:#1d2327;border-radius:4px;padding:6px 12px;cursor:pointer}
+
+#cosmdl-metabox .cosmdl-delete-modal-btn.confirm{background:#22c55e;border-color:#22c55e;color:#fff}
+
+#cosmdl-metabox .cosmdl-delete-modal-btn:disabled{opacity:.6;cursor:not-allowed}

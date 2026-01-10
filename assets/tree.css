@@ -15,6 +15,15 @@
 .cosmdl-tree-fullwidth .p-block { width: 100%; }
 .cosmdl-tree-fullwidth .pk-table { width: 100%; table-layout: auto; }
 
+.cosmdl-tree-header-error { background: #fee; color: #900; padding: 12px; margin: 10px 0; border: 1px solid #f99; }
+
+.cosmdl-tree-filter-form { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.cosmdl-tree-size-input { width: 100px; }
+
+.cosmdl-tree-drive-link { text-decoration: none; display: inline-block; margin-right: 4px; }
+
+.cosmdl-tree-empty { text-align: center; padding: 20px; }
+
 /* 为表格设定最小宽度，避免在窄屏下列过度压缩，触发横向滚动 */
 .cosmdl-tree-table-wrap .pk-table { min-width: 980px; }
 
@@ -44,6 +53,6 @@
 
 /* 调整筛选表单在窄屏上的排列方式，避免换行拥挤 */
 @media (max-width: 768px){
-  .cosmdl-tree-fullwidth form { flex-direction: column; align-items: stretch; }
-  .cosmdl-tree-fullwidth form > div { width: 100%; }
+  .cosmdl-tree-filter-form { flex-direction: column; align-items: stretch; }
+  .cosmdl-tree-filter-form > div { width: 100%; }
 }

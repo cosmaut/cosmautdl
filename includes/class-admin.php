@@ -113,9 +113,9 @@ class CosMDL_Admin {
         add_action('wp_ajax_cosmdl_fix_file_sizes', array($this, 'ajax_fix_file_sizes'));
         // AJAX：文件信息模块实时预览
         add_action('wp_ajax_cosmdl_fileinfo_preview', array($this, 'ajax_fileinfo_preview'));
-        // 在插件设置页页脚输出交互脚本（仅限 cosmdl-settings 页面）
-        add_action('admin_print_footer_scripts', array($this, 'print_inline_js'));
-    }
+		// 在插件设置页输出交互脚本（仅限 cosmdl-settings 页面）
+		add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
+	}
 
     /**
      * 中文注释：创建顶级菜单，便于使用者快速进入设置页面
@@ -173,13 +173,118 @@ class CosMDL_Admin {
         }
     }
 
-    /**
-     * 保留基础设置与交互脚本，清洁化后台实现。
-     */
+	/**
+	 * 保留基础设置与交互脚本，清洁化后台实现。
+	 */
 
-    /**
-     * 中文注释：设置页输出 - 水平抽屉式布局
-     */
+	/**
+	 * 在插件设置页按需加载 JS/CSS
+	 */
+	public function enqueue_admin_assets($hook_suffix){
+		if ($hook_suffix !== 'toplevel_page_cosmdl-settings') {
+			return;
+		}
+
+		wp_enqueue_style('cosmdl-style', COSMDL_PLUGIN_URL . 'assets/cosmautdl.css', array(), function_exists('cosmdl_asset_version') ? cosmdl_asset_version('assets/cosmautdl.css') : COSMDL_VERSION);
+		wp_enqueue_script('jquery');
+
+		$opts = $this->get_options();
+		$ip_geo_enabled = (isset($opts['stats_ip_geo']) && $opts['stats_ip_geo'] === 'yes');
+
+		$js = "var cosmdlIpGeoEnabled = " . ($ip_geo_enabled ? 'true' : 'false') . ";\n";
+		$js .= 'window.cosmdl_resolve_ips = function(container){' . "\n"
+			. '  if(!container) return;' . "\n"
+			. '  var nonceEl = document.getElementById("cosmdl-ajax-nonce");' . "\n"
+			. '  var nonce = nonceEl ? nonceEl.value : "";' . "\n"
+			. '  if(!window.cosmdlIpGeoCache){ window.cosmdlIpGeoCache = {}; }' . "\n"
+			. '  var els = container.querySelectorAll(".cosmdl-ip-loc");' . "\n"
+			. '  var ipToEls = {};' . "\n"
+			. '  var ips = [];' . "\n"
+			. '  for(var i=0;i<els.length;i++){' . "\n"
+			. '    var el = els[i];' . "\n"
+			. '    if(!el) continue;' . "\n"
+			. '    if(el.textContent && el.textContent.trim() !== "") continue;' . "\n"
+			. '    var ip = el.getAttribute("data-ip");' . "\n"
+			. '    if(!ip) continue;' . "\n"
+			. '    if(ip === "127.0.0.1" || ip === "::1") { el.textContent = " 本地"; continue; }' . "\n"
+			. '    if(!cosmdlIpGeoEnabled) continue;' . "\n"
+			. '    if(window.cosmdlIpGeoCache[ip]) { el.textContent = " " + window.cosmdlIpGeoCache[ip]; continue; }' . "\n"
+			. '    if(!ipToEls[ip]){ ipToEls[ip] = []; ips.push(ip); }' . "\n"
+			. '    ipToEls[ip].push(el);' . "\n"
+			. '  }' . "\n"
+			. '  if(!ips.length) return;' . "\n"
+			. '  ips = ips.slice(0, 50);' . "\n"
+			. '  var fd = new FormData();' . "\n"
+			. '  fd.append("action", "cosmdl_ip_geo_batch");' . "\n"
+			. '  fd.append("nonce", nonce);' . "\n"
+			. '  for(var j=0;j<ips.length;j++){ fd.append("ips[]", ips[j]); }' . "\n"
+			. '  fetch(ajaxurl, {method:"POST", body: fd})' . "\n"
+			. '    .then(function(r){ return r.json(); })' . "\n"
+			. '    .then(function(r){' . "\n"
+			. '      if(!r || !r.success || !r.data) return;' . "\n"
+			. '      var data = r.data;' . "\n"
+			. '      for(var ip in data){' . "\n"
+			. '        if(!Object.prototype.hasOwnProperty.call(data, ip)) continue;' . "\n"
+			. '        var loc = data[ip];' . "\n"
+			. '        if(typeof loc !== "string") loc = "";' . "\n"
+			. '        loc = loc.trim();' . "\n"
+			. '        if(loc){ window.cosmdlIpGeoCache[ip] = loc; }' . "\n"
+			. '        var list = ipToEls[ip] || [];' . "\n"
+			. '        for(var k=0;k<list.length;k++){' . "\n"
+			. '          if(!list[k]) continue;' . "\n"
+			. '          if(loc){ list[k].textContent = " " + loc; }' . "\n"
+			. '        }' . "\n"
+			. '      }' . "\n"
+			. '    })' . "\n"
+			. '    .catch(function(){});' . "\n"
+			. '};' . "\n";
+
+		$js .= 'if(!window.cosmdl_admin_init){ window.cosmdl_admin_init = true; document.addEventListener("click", function(e){' . "\n"
+			. '  var btn = e.target && e.target.closest ? e.target.closest(".cosmdl-count") : null;' . "\n"
+			. '  if(btn){' . "\n"
+			. '    var pid = btn.getAttribute("data-pid");' . "\n"
+			. '    var attach = btn.getAttribute("data-attach") || 1;' . "\n"
+			. '    var rowId = "per-drive-" + pid + "-" + attach;' . "\n"
+			. '    var row = document.getElementById(rowId);' . "\n"
+			. '    if(!row) return;' . "\n"
+			. '    var expanded = btn.getAttribute("aria-expanded") === "true";' . "\n"
+			. '    if(!expanded){' . "\n"
+			. '      btn.setAttribute("aria-expanded", "true");' . "\n"
+			. '      row.classList.remove("cosmdl-hidden");' . "\n"
+			. '      var container = row.querySelector(".cosmdl-details-box");' . "\n"
+			. '      if(!container){' . "\n"
+			. '        var td = row.querySelector("td");' . "\n"
+			. '        container = document.createElement("div");' . "\n"
+			. '        container.className = "cosmdl-details-box";' . "\n"
+			. '        container.innerHTML = \'<p class="cosmdl-muted">正在加载详细记录...</p>\';' . "\n"
+			. '        td.appendChild(container);' . "\n"
+			. '        var fd = new FormData();' . "\n"
+			. '        fd.append("action", "cosmdl_get_download_details");' . "\n"
+			. '        fd.append("nonce", document.getElementById("cosmdl-ajax-nonce").value);' . "\n"
+			. '        fd.append("pid", pid);' . "\n"
+			. '        fd.append("attach", attach);' . "\n"
+			. '        fetch(ajaxurl, {method:"POST", body:fd})' . "\n"
+			. '          .then(function(r){ return r.json(); })' . "\n"
+			. '          .then(function(r){' . "\n"
+			. '             if(r.success){ container.innerHTML = r.data; if(window.cosmdl_resolve_ips) window.cosmdl_resolve_ips(container); }' . "\n"
+			. '             else { container.innerHTML = \'<p class="cosmdl-error">\' + (r.data||"Error") + \'</p>\'; }' . "\n"
+			. '          })' . "\n"
+			. '          .catch(function(){ container.innerHTML = \'<p class="cosmdl-error">网络错误</p>\'; });' . "\n"
+			. '      }' . "\n"
+			. '    } else {' . "\n"
+			. '      btn.setAttribute("aria-expanded", "false");' . "\n"
+			. '      row.classList.add("cosmdl-hidden");' . "\n"
+			. '    }' . "\n"
+			. '    return;' . "\n"
+			. '  }' . "\n"
+			. '}); }' . "\n";
+
+		wp_add_inline_script('jquery', $js, 'after');
+	}
+
+	/**
+	 * 中文注释：设置页输出 - 水平抽屉式布局
+	 */
     /**
      * 渲染设置页（水平抽屉式布局）
      * 包含：网盘管理、卡片外观、权限、下载页、声明、扫码、下载统计、文件树等标签页。
@@ -3589,11 +3694,11 @@ class CosMDL_Admin {
                                             <button type="button" class="button button-small cosmdl-count" data-pid="<?php echo intval($r['pid']); ?>" data-attach="<?php echo intval($r['attach']); ?>" aria-expanded="false" title="<?php echo esc_attr__('点击查看各网盘下载次数','cosmautdl'); ?>"><?php echo intval($r['count']); ?></button>
                                         </td>
                                     </tr>
-                                    <tr id="per-drive-<?php echo intval($r['pid']); ?>-<?php echo intval($r['attach']); ?>" class="per-drive-row" style="display:none">
-                                        <td colspan="5">
-                                            <?php
-                                            $uploaded = isset($r['uploaded']) ? $r['uploaded'] : array();
-                                            $calculated_counts = isset($r['calculated_counts']) ? $r['calculated_counts'] : array();
+								<tr id="per-drive-<?php echo intval($r['pid']); ?>-<?php echo intval($r['attach']); ?>" class="per-drive-row cosmdl-hidden">
+									<td colspan="5">
+										<?php
+										$uploaded = isset($r['uploaded']) ? $r['uploaded'] : array();
+										$calculated_counts = isset($r['calculated_counts']) ? $r['calculated_counts'] : array();
 
                                             if (!empty($uploaded)){
                                                 echo '<div class="per-drive-box">';

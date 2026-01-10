@@ -7,6 +7,8 @@
 if (!defined('ABSPATH')) { exit; }
 
 class CosMDL_Meta_Box {
+    private $metabox_inline_js = '';
+	private $metabox_inline_js_printed = false;
     /**
      * 构造函数
      * 作用：注册文章编辑页的元数据框、保存钩子，以及发布状态转换时的自动填充逻辑。
@@ -25,7 +27,79 @@ class CosMDL_Meta_Box {
         add_action('transition_post_status', array($this, 'autofill_update_date_on_publish'), 10, 3);
 
         add_action('wp_ajax_cosmdl_enable_drive', array($this, 'ajax_enable_drive'));
+
+		add_action('admin_enqueue_scripts', array($this, 'enqueue_metabox_assets'));
     }
+
+	public function enqueue_metabox_assets($hook_suffix){
+		if (!in_array($hook_suffix, array('post.php', 'post-new.php'), true)) {
+			return;
+		}
+
+		$screen = function_exists('get_current_screen') ? get_current_screen() : null;
+		if (!$screen || !isset($screen->post_type) || !in_array($screen->post_type, array('post', 'page'), true)) {
+			return;
+		}
+
+		$filter_name = 'postbox_classes_' . $screen->id . '_cosmdl-post-meta-boxes';
+		if ( ! has_filter( $filter_name, array( $this, 'filter_postbox_classes' ) ) ) {
+			add_filter( $filter_name, array( $this, 'filter_postbox_classes' ) );
+		}
+
+		wp_enqueue_style(
+			'cosmdl-style',
+			COSMDL_PLUGIN_URL . 'assets/cosmautdl.css',
+			array(),
+			function_exists('cosmdl_asset_version') ? cosmdl_asset_version('assets/cosmautdl.css') : COSMDL_VERSION
+		);
+		wp_enqueue_script('jquery');
+
+		if (!has_action('admin_print_footer_scripts', array($this, 'print_metabox_inline_js'))) {
+			add_action('admin_print_footer_scripts', array($this, 'print_metabox_inline_js'), 99);
+		}
+	}
+
+	public function filter_postbox_classes( $classes ) {
+		global $post;
+		if ( ! $post || ! is_object( $post ) ) {
+			return $classes;
+		}
+
+		$start_enabled = $this->get_meta( (int) $post->ID, 'cosmdl_start' ) === 'yes';
+		$is_new_post   = ( $post->post_status === 'auto-draft' || empty( $post->ID ) );
+		$should_close  = $is_new_post ? true : ! $start_enabled;
+
+		if ( $should_close ) {
+			if ( ! in_array( 'closed', $classes, true ) ) {
+				$classes[] = 'closed';
+			}
+		} else {
+			$classes = array_values( array_diff( $classes, array( 'closed' ) ) );
+		}
+
+		return $classes;
+	}
+
+	public function print_metabox_inline_js() {
+		if ( $this->metabox_inline_js_printed ) {
+			return;
+		}
+
+		$js = trim( (string) $this->metabox_inline_js );
+		if ( $js === '' ) {
+			return;
+		}
+
+		$this->metabox_inline_js_printed = true;
+
+		if ( function_exists( 'wp_print_inline_script_tag' ) ) {
+			wp_print_inline_script_tag( $js, array( 'id' => 'cosmdl-metabox-inline-js' ) );
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo "<script id='cosmdl-metabox-inline-js'>\n" . $js . "\n</script>\n";
+	}
 
     public function ajax_enable_drive(){
         if (!current_user_can('manage_options')) {
@@ -147,109 +221,44 @@ class CosMDL_Meta_Box {
         $is_new_post = ($post->post_status === 'auto-draft' || empty($post->ID));
         $should_collapse = $is_new_post ? true : !$start_enabled;
 
-        $global_options = get_option('cosmdl_options', array());
-        $show_qr_block = (is_array($global_options) && isset($global_options['show_qr_block'])) ? (string) $global_options['show_qr_block'] : 'no';
-        $drive_management = $this->get_drive_management_settings();
-        
-        echo '<style>.cosmdl-form th{width:12%}.cosmdl-form input[type=text]{width:70%}.drive-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:none}.drive-row > label:first-child{min-width:96px;font-weight:600}
-        .general-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:none}
-        .general-row > label:first-child{min-width:96px;font-weight:600}
-        .inline{display:flex;align-items:center;gap:6px}
-        .drive-row .inline label.inline-text{min-width:auto;width:auto;flex:0 0 auto;font-weight:600}
-        .general-input{flex:1;max-width:540px;width:100%;}
-        .url-input{flex:1;max-width:540px;width:100%;}
-        .general-input.select-input{max-width:200px}
-        /* 附件标签样式（符合浏览器多标签页的外观与交互） */
-        .cosmdl-tabs{display:flex;gap:0;align-items:flex-end;margin:12px 0 8px;border-bottom:none;position:relative;padding:0 2px 0 2px;box-sizing:border-box}
-        /* 添加背景线条容器 */
-        .cosmdl-tabs::before{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#c3c7cf;z-index:1}
-        .cosmdl-tab{position:relative;display:inline-flex;align-items:center;gap:6px;margin:0 1px 0 0;padding:6px 12px;border:1px solid #d3d7de;border-top-left-radius:14px;border-top-right-radius:14px;border-bottom-left-radius:14px;border-bottom-right-radius:14px;background:#eef2f6;cursor:pointer;co...;z-index:2}
-        .cosmdl-tab:not(.active){background:#eef2f6;color:#6b7280;position:relative;top:-2px;height:30px;padding:4px 12px 4px;display:flex;align-items:center;box-sizing:border-box}
-        .cosmdl-tab:hover:not(.active){background:#e1effe;color:#2563eb;border-color:#93c5fd}
-        /* 激活标签样式，确保覆盖背景线条 */
-        .cosmdl-tab.active{z-index:10;background:#ffffff;border-color:#c3c7cf;border-bottom-color:transparent !important;box-shadow:0 -2px 10px rgba(0,0,0,0.06);border-top-left-radius:14px;border-top-right-radius:14px;border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0}
-        /* 调整标签布局，使关闭按钮靠右显示 */
-        .cosmdl-tab{display:flex;align-items:center;justify-content:space-between;position:relative}
-        .cosmdl-tab-text{flex:1}
-        /* 调整标签间距，移除标签之间的过渡效果 */
-        .cosmdl-tabs .cosmdl-tab + .cosmdl-tab{margin-left:0}
-        /* 确保底部覆盖条正确显示 */
-        .tab-bottom-cover{display:none}
-        /* 关闭按钮：居中圆形，未选中与选中均有悬停态，靠右放置并向右移动8px减少误点击 */
-        .cosmdl-tab-close{display:flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:auto;padding:0;color:#6b7280;cursor:pointer;border-radius:50%;border:1px solid transparent;transition:background-color .15s ease,color .15s ease,border-color .15s ease;font-size:12px;line-height:18px;text-align:center;position:relative;right:-8px;top-0px;user-select:none;overflow:hidden;transform:translateX(0)}
-        .cosmdl-tab-close:hover, .cosmdl-tab.active .cosmdl-tab-close:hover, .cosmdl-tab:not(.active) .cosmdl-tab-close:hover{background-color:#e81123;color:#ffffff;border-color:transparent}
-        /* 添加按钮：圆形“+”，悬停变为淡蓝背景，贴近浏览器样式 */
-        .cosmdl-tab-add{position:relative;top:-2px;display:inline-block;width:28px;height:28px;border:1px solid #d1d5db;background:#f5f6f8;border-radius:50%;cursor:pointer;color:#64748b;transition:background-color .15s ease,border-color .15s ease,color .15s ease;vertical-align:middle;font-size:0;line-height:0}
-        .cosmdl-tab-add::before,.cosmdl-tab-add::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;transform:translate(-50%,-50%);display:block}
-        .cosmdl-tab-add::before{width:12px;height:2px;border-radius:1px}
-        .cosmdl-tab-add::after{width:2px;height:12px;border-radius:1px}
-        .cosmdl-tab-add:hover{background:#e1effe;border-color:#93c5fd;color:#2563eb}
-        .cosmdl-attach-group{border-top:none;padding-top:8px}
-        .cosmdl-group-title{font-weight:600;margin:6px 0 4px;color:#333}
-        /* 开关样式（与“全局设置 → 插件开关”保持一致） */
-        .cosmdl-switch{position:relative;display:inline-block;width:40px!important;height:22px;vertical-align:middle;min-width:40px;flex-shrink:0;flex:0 0 40px;line-height:0}
-        .cosmdl-switch input{opacity:0;width:0;height:0}
-        .cosmdl-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#d9d9d9;transition:.2s;border-radius:22px}
-        .cosmdl-slider:before{position:absolute;content:"";height:18px;width:18px;left:2px;top:50%;background:white;transition:.2s;border-radius:50%;transform:translateY(-50%)}
-        .cosmdl-switch input:checked + .cosmdl-slider{background:#22c55e}
-        .cosmdl-switch input:checked + .cosmdl-slider:before{transform:translate(18px,-50%)}
-        /* 展开/收起样式 */
-        .cosmdl-collapsible{'.($should_collapse ? 'display:none;' : '').'}
-        /* 标题左侧开关样式 */
-        #cosmdl-post-meta-boxes .hndle{display:flex;align-items:center;justify-content:flex-start;gap:8px;padding-left:12px}
-        #cosmdl-post-meta-boxes .hndle .cosmdl-header-toggle{display:flex;align-items:center;margin-right:8px;order:-1}
-        </style>';
-
-        echo '<style>'
-            . '#cosmdl-metabox .cosmdl-smart-row{align-items:flex-start}'
-            . '#cosmdl-metabox .cosmdl-smart-wrap{flex:1;max-width:540px;width:100%;display:flex;flex-direction:column;gap:6px}'
-            . '#cosmdl-metabox .cosmdl-smart-input{width:100%;min-height:54px;resize:vertical;padding:6px 8px;box-sizing:border-box}'
-            . '#cosmdl-metabox .cosmdl-smart-actions{display:flex;gap:8px;align-items:center}'
-            . '#cosmdl-metabox .cosmdl-smart-tip{font-size:12px;line-height:1.5;color:#475569;min-height:18px}'
-            . '#cosmdl-metabox .cosmdl-smart-tip.is-ok{color:#166534}'
-            . '#cosmdl-metabox .cosmdl-smart-tip.is-bad{color:#b91c1c}'
-            . '.cosmdl-delete-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:100001;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity 200ms ease,visibility 0s linear 200ms}'
-            . '.cosmdl-delete-modal.is-visible{opacity:1;visibility:visible;transition:opacity 200ms ease,visibility 0s}'
-            . '.cosmdl-delete-modal-content{background:#fff;border-radius:10px;padding:24px;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:translateY(20px);transition:transform 200ms ease}'
-            . '.cosmdl-delete-modal.is-visible .cosmdl-delete-modal-content{transform:translateY(0)}'
-            . '.cosmdl-delete-modal-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}'
-            . '.cosmdl-delete-modal-header .dashicons{color:#2271b1;font-size:24px}'
-            . '.cosmdl-delete-modal-title{font-size:18px;font-weight:600;color:#1d2327;margin:0}'
-            . '.cosmdl-delete-modal-message{color:#646970;margin-bottom:24px;line-height:1.5}'
-            . '.cosmdl-delete-modal-buttons{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap}'
-            . '.cosmdl-delete-modal-btn{padding:8px 16px;border-radius:6px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all 200ms ease}'
-            . '.cosmdl-delete-modal-btn.cancel{background:#f6f7f7;color:#646970;border:1px solid #c3c4c7}'
-            . '.cosmdl-delete-modal-btn.cancel:hover{background:#e9e9e9}'
-            . '.cosmdl-delete-modal-btn.confirm{background:#2271b1;color:#fff;border:1px solid #1b5e9a}'
-            . '.cosmdl-delete-modal-btn.confirm:hover{background:#1b5e9a}'
-            . '.cosmdl-delete-modal-btn:disabled{opacity:.6;cursor:not-allowed}'
-            . '</style>';
-        
-        // 中文注释：输出编辑页需要的最小交互脚本（避免使用 heredoc，提升兼容性）
-        ?>
-        <script>
+		$global_options = get_option('cosmdl_options', array());
+		$show_qr_block = (is_array($global_options) && isset($global_options['show_qr_block'])) ? (string) $global_options['show_qr_block'] : 'no';
+		$drive_management = $this->get_drive_management_settings();
+		ob_start();
+		?>
         // 本地存储：在未保存文章时，刷新页面也能保留已填入的附件信息
         (function(){
-            var postIdEl = document.getElementById('post_ID');
-            var postId = postIdEl ? parseInt(postIdEl.value, 10) : 0;
-            var postStatusEl = document.getElementById('original_post_status');
-            window.cosmdlIsAutoDraft = postStatusEl ? (postStatusEl.value === 'auto-draft') : false;
             var box = null;
-            document.addEventListener('DOMContentLoaded', function(){
+            function init(){
                 box = document.getElementById('cosmdl-metabox');
-                if(!box){ return; }
+                if(!box){ return false; }
+                if (box.getAttribute('data-cosmdl-init') === '1') { return true; }
+                box.setAttribute('data-cosmdl-init', '1');
+
+                var postIdEl = document.getElementById('post_ID');
+                var postId = postIdEl ? parseInt(postIdEl.value, 10) : 0;
+                var postStatusEl = document.getElementById('original_post_status');
+                window.cosmdlIsAutoDraft = postStatusEl ? (postStatusEl.value === 'auto-draft') : false;
+
                 // 将启用下载开关移动到元框标题左侧
                 try{
                     var wrap = document.getElementById('cosmdl-start-toggle-wrap');
                     var row = document.getElementById('cosmdl-start-row');
                     var postbox = document.getElementById('cosmdl-post-meta-boxes');
-                    var hndle = postbox ? postbox.querySelector('.hndle') : null;
-                    if(hndle && wrap){ 
-                        // 插入到标题左侧（第一个子元素位置）
-                        hndle.insertBefore(wrap, hndle.firstChild); 
+                    var hndle = null;
+                    if (postbox) {
+                        hndle = postbox.querySelector('.hndle') || postbox.querySelector('.postbox-header') || postbox.querySelector('h2');
                     }
-                    if(row){ row.parentNode.removeChild(row); }
+                    if (wrap && hndle) {
+                        hndle.insertBefore(wrap, hndle.firstChild);
+                        if (row && row.parentNode) {
+                            row.parentNode.removeChild(row);
+                        }
+                    } else if (row) {
+                        row.classList.remove('cosmdl-hidden');
+                    }
                 }catch(e){}
+
                 // 键策略：auto-draft 使用统一草稿键；正式ID使用按ID键
                 var key = (window.cosmdlIsAutoDraft ? 'cosmdl_meta_draft' : ('cosmdl_meta_' + postId));
                 // 读取并应用存储值
@@ -282,12 +291,15 @@ class CosMDL_Meta_Box {
                     // 根据存储的启用下载状态决定展开/收起，并同步小三角开合状态
                     if (data.hasOwnProperty('cosmdl_start')) {
                         var isOn = (data['cosmdl_start'] === 'yes');
-                        // 同步开关视觉状态
                         var cb = document.getElementById('cosmdl_start');
                         if (cb) cb.checked = isOn;
-                        // 应用显示与开合
                         toggleCosMDLFields(isOn);
                         setPostboxOpen(isOn);
+                    } else {
+                        var cb2 = document.getElementById('cosmdl_start');
+                        var isOn2 = cb2 ? !!cb2.checked : false;
+                        toggleCosMDLFields(isOn2);
+                        setPostboxOpen(isOn2);
                     }
                 }catch(e){}
                 // 监听变更与输入并写入存储（确保自动化 fill 也能触发保存）
@@ -307,21 +319,57 @@ class CosMDL_Meta_Box {
                       }catch(err){}
                   }, true);
                 });
-            });
+
+                var checkbox = document.getElementById('cosmdl_start');
+                if (checkbox && checkbox.getAttribute('data-cosmdl-bound') !== '1') {
+                    checkbox.setAttribute('data-cosmdl-bound', '1');
+                    checkbox.addEventListener('change', function(){
+                        handleStartToggle(this);
+                    });
+                }
+
+                return true;
+            }
+
+            function schedule(){
+                if (init()) { return; }
+                var tries = 0;
+                var timer = setInterval(function(){
+                    tries++;
+                    if (init() || tries > 100) {
+                        clearInterval(timer);
+                    }
+                }, 200);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', schedule);
+            } else {
+                schedule();
+            }
         })();
         // 工具：根据开关状态隐藏/显示扫码控件
+        function cosmdlSetHidden(el, hidden){
+            if (!el) return;
+            el.classList.toggle('cosmdl-hidden', !!hidden);
+        }
+        function cosmdlIsHidden(el){
+            if (!el) return true;
+            return el.classList.contains('cosmdl-hidden');
+        }
         function cosmdlApplyQrMode(isOn){
             var els = document.querySelectorAll('.drive-row .inline label.inline-text, .drive-row .inline .cosmdl-switch');
-            els.forEach(function(el){ el.style.display = isOn ? '' : 'none'; });
+            els.forEach(function(el){ cosmdlSetHidden(el, !isOn); });
         }
         function toggleCosMDLFields(forceShow){
             var fields = document.querySelector('.cosmdl-collapsible');
+            if (!fields) return;
             if(forceShow === true){
-                fields.style.display = 'block';
+                cosmdlSetHidden(fields, false);
             } else if(forceShow === false){
-                fields.style.display = 'none';
+                cosmdlSetHidden(fields, true);
             } else {
-                fields.style.display = (fields.style.display === 'none') ? 'block' : 'none';
+                cosmdlSetHidden(fields, !cosmdlIsHidden(fields));
             }
         }
         // 控制元框本体开合（同步小三角与 closed 类，避免“开关开启但元框仍收起”的问题）
@@ -356,6 +404,16 @@ class CosMDL_Meta_Box {
                 localStorage.setItem(key, JSON.stringify(data));
             }catch(e){}
         }
+
+		try{
+			window.cosmdlSetHidden = cosmdlSetHidden;
+			window.cosmdlIsHidden = cosmdlIsHidden;
+			window.cosmdlApplyQrMode = cosmdlApplyQrMode;
+			window.toggleCosMDLFields = toggleCosMDLFields;
+			window.setPostboxOpen = setPostboxOpen;
+			window.handleStartToggle = handleStartToggle;
+		}catch(e){}
+
         // 自检：后台全局二维码区块状态，若为关闭则隐藏任何可能出现的扫码控件
         (function(){
             if (typeof ajaxurl === 'undefined') return;
@@ -381,7 +439,7 @@ class CosMDL_Meta_Box {
         (function(){
             function tabsWrap(){ return document.querySelector('.cosmdl-tabs'); }
             function addBtn(){ return document.getElementById('cosmdl_tab_add'); }
-            function hasTab(idx){ return !!document.querySelector('.cosmdl-tab[data-idx=\"'+idx+'\"]'); }
+            function hasTab(idx){ return !!document.querySelector('.cosmdl-tab[data-idx="'+idx+'"]'); }
             function createTab(idx){
                 if (hasTab(idx)) return;
                 var btn = document.createElement('button');
@@ -482,8 +540,8 @@ class CosMDL_Meta_Box {
                     }
                 });
                 
-                groups.forEach(function(g){ 
-                    g.style.display = (g.getAttribute('data-idx')==idx) ? '' : 'none'; 
+                groups.forEach(function(g){
+                    g.classList.toggle('cosmdl-hidden', (g.getAttribute('data-idx')!=idx));
                 });
             }
             function groupHasData(group){
@@ -508,7 +566,7 @@ class CosMDL_Meta_Box {
                         if (/^cosmdl\d*_size_unit$/.test(name) || name === 'cosmdl_size_unit') {
                             var sizeFieldName = name.replace('_size_unit','');
                             // 注意：双引号需要转义以避免 PHP 输出脚本时的语法冲突
-                            var sizeInput = group.querySelector('input[name=\"'+sizeFieldName+'\"]');
+                            var sizeInput = group.querySelector('input[name="'+sizeFieldName+'"]');
                             if (!sizeInput || (sizeInput.value || '').trim() === '') {
                                 // 未填写“资源大小”，忽略单位选择
                                 continue;
@@ -551,12 +609,12 @@ class CosMDL_Meta_Box {
                     var g = groups[i];
                     var idx = g.getAttribute('data-idx');
                     if (idx==='1') continue;
-                    if (g.style.display==='none' && !hasTab(idx)){
+                    if (cosmdlIsHidden(g) && !hasTab(idx)){
                         canAdd = true;
                         break;
                     }
                 }
-                btn.style.display = canAdd ? '' : 'none';
+                cosmdlSetHidden(btn, !canAdd);
             }
             document.addEventListener('DOMContentLoaded', function(){
                 // 初始化：仅"附件1"有可见标签，其他根据数据生成标签但不默认展开
@@ -624,22 +682,22 @@ class CosMDL_Meta_Box {
                     try{
                         var groupsAll = document.querySelectorAll('.cosmdl-attach-group');
                         for (var ii=0; ii<groupsAll.length; ii++){
-                            var gid = groupsAll[ii].getAttribute('data-idx');
-                            if (!hasTab(gid)){
-                                createTab(gid);
-                                groupsAll[ii].style.display='';
+                                var gid = groupsAll[ii].getAttribute('data-idx');
+                                if (!hasTab(gid)){
+                                    createTab(gid);
+                                cosmdlSetHidden(groupsAll[ii], false);
                                 // 重新排序：按 1..6 的顺序将现有标签依次插入到 + 按钮之前
                                 var wrap = tabsWrap(); var add = addBtn();
                                 for (var k=1;k<=6;k++){
                                     // 注意：双引号需要转义以避免 PHP 输出脚本时的语法冲突
-                                    var tk = wrap.querySelector('.cosmdl-tab[data-idx=\"'+k+'\"]');
+                                    var tk = wrap.querySelector('.cosmdl-tab[data-idx="'+k+'"]');
                                     if (tk){ wrap.insertBefore(tk, add); }
                                 }
                                 activate(gid);
                                 // 新的可见性计算：只要存在未创建的标签即可继续显示“+”
                                 var canAddNew = false;
                                 for (var jj=0;jj<groupsAll.length;jj++){ if (!hasTab(groupsAll[jj].getAttribute('data-idx'))){ canAddNew = true; break; } }
-                                add.style.display = canAddNew ? '' : 'none';
+                                if (add){ cosmdlSetHidden(add, !canAddNew); }
                                 return; // 阻止后续旧逻辑执行
                             }
                         }
@@ -650,9 +708,9 @@ class CosMDL_Meta_Box {
                         var g = groups[i];
                         var idx = g.getAttribute('data-idx');
                         if (idx==='1') continue;
-                        if (g.style.display==='none' && !hasTab(idx)){
+                        if (cosmdlIsHidden(g) && !hasTab(idx)){
                             createTab(idx);
-                            g.style.display='';
+                            cosmdlSetHidden(g, false);
                             activate(idx);
                             updateAddVisibility();
                             break;
@@ -678,7 +736,7 @@ class CosMDL_Meta_Box {
                         return filled;
                     };
                     if (idx==='1'){
-                        var g1 = document.querySelector('.cosmdl-attach-group[data-idx=\"1\"]');
+                        var g1 = document.querySelector('.cosmdl-attach-group[data-idx="1"]');
                         if (g1){
                             var inputs1 = g1.querySelectorAll('input[name],select[name],textarea[name]');
                             inputs1.forEach(function(el){ 
@@ -694,7 +752,7 @@ class CosMDL_Meta_Box {
                             });
                         }
                         // 移除标签按钮（附件1）并决定下一个激活项
-                        var tab1 = document.querySelector('.cosmdl-tab[data-idx=\"1\"]');
+                        var tab1 = document.querySelector('.cosmdl-tab[data-idx="1"]');
                         if (tab1 && tab1.parentNode){ tab1.parentNode.removeChild(tab1); }
                         var target = (function(cur){
                             var curNum = parseInt(cur,10);
@@ -711,25 +769,25 @@ class CosMDL_Meta_Box {
                             (function(){
                                 var curNum = parseInt(idx,10);
                                 for (var i = curNum - 1; i >= 1; i--){
-                                    var gi = document.querySelector('.cosmdl-attach-group[data-idx=\"'+i+'\"]');
+                                    var gi = document.querySelector('.cosmdl-attach-group[data-idx="'+i+'"]');
                                     if (gi && hasGroupData(gi)){ selectWithData = String(i); break; }
                                 }
                                 if (!selectWithData){
                                     for (var j = curNum + 1; j <= 6; j++){
-                                        var gj = document.querySelector('.cosmdl-attach-group[data-idx=\"'+j+'\"]');
+                                        var gj = document.querySelector('.cosmdl-attach-group[data-idx="'+j+'"]');
                                         if (gj && hasGroupData(gj)){ selectWithData = String(j); break; }
                                     }
                                 }
                             })();
                             if (selectWithData){
                                 if (!hasTab(selectWithData)) createTab(selectWithData);
-                                var gsel = document.querySelector('.cosmdl-attach-group[data-idx=\"'+selectWithData+'\"]');
-                                if (gsel){ gsel.style.display=''; }
+                                var gsel = document.querySelector('.cosmdl-attach-group[data-idx="'+selectWithData+'"]');
+                                if (gsel){ cosmdlSetHidden(gsel, false); }
                                 activate(selectWithData);
                                 updateAddVisibility();
                             } else {
                                 var col = document.querySelector('.cosmdl-collapsible');
-                                if (col) col.style.display = 'none';
+                                if (col) cosmdlSetHidden(col, true);
                                 var tog = document.getElementById('cosmdl_start');
                                 if (tog){
                                     tog.checked = false;
@@ -739,7 +797,7 @@ class CosMDL_Meta_Box {
                         }
                         return;
                     }
-                    var group = document.querySelector('.cosmdl-attach-group[data-idx=\"'+idx+'\"]');
+                    var group = document.querySelector('.cosmdl-attach-group[data-idx="'+idx+'"]');
                     if (group){
                         var inputs = group.querySelectorAll('input[name],select[name],textarea[name]');
                         inputs.forEach(function(el){
@@ -756,9 +814,9 @@ class CosMDL_Meta_Box {
                                 el.dispatchEvent(new Event('input', { bubbles: true }));
                             }catch(err){}
                         });
-                        group.style.display = 'none';
+                        cosmdlSetHidden(group, true);
                         // 移除标签按钮
-                        var tab = document.querySelector('.cosmdl-tab[data-idx=\"'+idx+'\"]');
+                        var tab = document.querySelector('.cosmdl-tab[data-idx="'+idx+'"]');
                         if (tab && tab.parentNode){ tab.parentNode.removeChild(tab); }
                         // 关闭后激活最近的其他标签；若无则收起并关闭启用
                         var target2 = (function(cur){
@@ -776,25 +834,25 @@ class CosMDL_Meta_Box {
                             (function(){
                                 var curNum2 = parseInt(idx,10);
                                 for (var i2 = curNum2 - 1; i2 >= 1; i2--){
-                                    var gi2 = document.querySelector('.cosmdl-attach-group[data-idx=\"'+i2+'\"]');
+                                    var gi2 = document.querySelector('.cosmdl-attach-group[data-idx="'+i2+'"]');
                                     if (gi2 && hasGroupData(gi2)){ selectWithData2 = String(i2); break; }
                                 }
                                 if (!selectWithData2){
                                     for (var j2 = curNum2 + 1; j2 <= 6; j2++){
-                                        var gj2 = document.querySelector('.cosmdl-attach-group[data-idx=\"'+j2+'\"]');
+                                        var gj2 = document.querySelector('.cosmdl-attach-group[data-idx="'+j2+'"]');
                                         if (gj2 && hasGroupData(gj2)){ selectWithData2 = String(j2); break; }
                                     }
                                 }
                             })();
                             if (selectWithData2){
                                 if (!hasTab(selectWithData2)) createTab(selectWithData2);
-                                var gsel2 = document.querySelector('.cosmdl-attach-group[data-idx=\"'+selectWithData2+'\"]');
-                                if (gsel2){ gsel2.style.display=''; }
+                                var gsel2 = document.querySelector('.cosmdl-attach-group[data-idx="'+selectWithData2+'"]');
+                                if (gsel2){ cosmdlSetHidden(gsel2, false); }
                                 activate(selectWithData2);
                                 updateAddVisibility();
                             } else {
                                 var col2 = document.querySelector('.cosmdl-collapsible');
-                                if (col2) col2.style.display = 'none';
+                                if (col2) cosmdlSetHidden(col2, true);
                                 var tog2 = document.getElementById('cosmdl_start');
                                 if (tog2){
                                     tog2.checked = false;
@@ -1059,28 +1117,17 @@ class CosMDL_Meta_Box {
 
                 var lab = document.createElement('label');
                 lab.setAttribute('for', urlKey);
-                lab.style.display = 'inline-block';
-                lab.style.minWidth = '100px';
-                lab.style.verticalAlign = 'middle';
+                lab.className = 'cosmdl-field-label';
                 lab.textContent = label || driveKey;
                 row.appendChild(lab);
 
                 var urlWrap = document.createElement('div');
-                urlWrap.style.position = 'relative';
-                urlWrap.style.display = 'inline-block';
-                urlWrap.style.width = '100%';
-                urlWrap.style.maxWidth = '540px';
+                urlWrap.className = 'cosmdl-drive-input-wrap';
 
                 var img = document.createElement('img');
                 img.src = cosmdlSmartConfig.imagesBase + driveKey + '.png';
                 img.alt = label || driveKey;
-                img.style.position = 'absolute';
-                img.style.left = '8px';
-                img.style.top = '50%';
-                img.style.transform = 'translateY(-50%)';
-                img.style.width = '20px';
-                img.style.height = '20px';
-                img.style.zIndex = '1';
+                img.className = 'cosmdl-drive-icon';
                 urlWrap.appendChild(img);
 
                 var urlInput = document.createElement('input');
@@ -1090,10 +1137,6 @@ class CosMDL_Meta_Box {
                 urlInput.id = urlKey;
                 urlInput.setAttribute('data-drive-key', driveKey);
                 urlInput.setAttribute('data-field', 'url');
-                urlInput.style.paddingLeft = '34px';
-                urlInput.style.paddingRight = '8px';
-                urlInput.style.height = '30px';
-                urlInput.style.boxSizing = 'border-box';
                 urlWrap.appendChild(urlInput);
                 row.appendChild(urlWrap);
 
@@ -1108,9 +1151,6 @@ class CosMDL_Meta_Box {
                 pwdInput.placeholder = '提取码';
                 pwdInput.setAttribute('data-drive-key', driveKey);
                 pwdInput.setAttribute('data-field', 'pwd');
-                pwdInput.style.padding = '0 8px';
-                pwdInput.style.height = '30px';
-                pwdInput.style.boxSizing = 'border-box';
                 inline.appendChild(pwdInput);
 
                 if (cosmdlSmartConfig.showQr){
@@ -1382,7 +1422,7 @@ class CosMDL_Meta_Box {
                                 msgEl.textContent = '识别到该分享属于“' + label + '”，但当前未在网盘管理启用。是否现在启用并自动回填到该网盘？';
                             }
                             if (otherBtn){
-                                otherBtn.style.display = '';
+                                cosmdlSetHidden(otherBtn, false);
                             }
                             if (confirmBtn){
                                 confirmBtn.disabled = false;
@@ -1409,8 +1449,9 @@ class CosMDL_Meta_Box {
 
             document.addEventListener('DOMContentLoaded', cosmdlSmartInit);
         })();
-        </script>
-        <?php
+		<?php
+		$cosmdl_inline_js = trim((string) ob_get_clean());
+		$this->metabox_inline_js = $cosmdl_inline_js;
 
         // 中文注释：先输出启用下载开关（不显示“启用下载”文字），随后通过脚本移动到标题右侧
         $start_field = null;
@@ -1424,9 +1465,9 @@ class CosMDL_Meta_Box {
             $val = $this->get_meta($post->ID, $start_field['name']);
             echo '<div id="cosmdl-metabox">';
             // 隐藏行，仅承载待移动的开关控件
-            echo '<div class="general-row" id="cosmdl-start-row" style="display:none">';
+            echo '<div class="general-row cosmdl-hidden" id="cosmdl-start-row">';
             echo '<span id="cosmdl-start-toggle-wrap" class="cosmdl-header-toggle">';
-            echo '<label class="cosmdl-switch" for="'.esc_attr($start_field['name']).'"><input type="checkbox" name="'.esc_attr($start_field['name']).'" id="'.esc_attr($start_field['name']).'" value="yes" '.checked('yes', htmlentities($val,1), false).' onchange="handleStartToggle(this)" /><span class="cosmdl-slider"></span></label>';
+            echo '<label class="cosmdl-switch" for="'.esc_attr($start_field['name']).'"><input type="checkbox" name="'.esc_attr($start_field['name']).'" id="'.esc_attr($start_field['name']).'" value="yes" '.checked('yes', htmlentities($val,1), false).' /><span class="cosmdl-slider"></span></label>';
             echo '</span>';
             echo '</div>';
             // 添加统一的nonce字段，替代每个字段单独的nonce验证
@@ -1441,7 +1482,7 @@ class CosMDL_Meta_Box {
                 . '<div class="cosmdl-delete-modal-message" id="cosmdl-enable-drive-modal-message"></div>'
                 . '<div class="cosmdl-delete-modal-buttons">'
                 . '<button type="button" id="cosmdl-enable-drive-cancel" class="cosmdl-delete-modal-btn cancel">'.esc_html__('取消','cosmautdl').'</button>'
-                . '<button type="button" id="cosmdl-enable-drive-other" class="cosmdl-delete-modal-btn cancel">'.esc_html__('回填到其他网盘','cosmautdl').'</button>'
+                . '<button type="button" id="cosmdl-enable-drive-other" class="cosmdl-delete-modal-btn cancel cosmdl-hidden">'.esc_html__('回填到其他网盘','cosmautdl').'</button>'
                 . '<button type="button" id="cosmdl-enable-drive-confirm" class="cosmdl-delete-modal-btn confirm">'.esc_html__('启用并回填','cosmautdl').'</button>'
                 . '</div>'
                 . '</div>'
@@ -1449,7 +1490,11 @@ class CosMDL_Meta_Box {
         }
         
         // 中文注释：可折叠区域包含附件分组（最多6个），每组有通用字段与网盘字段
-        echo '<div class="cosmdl-collapsible">';
+        $collapsible_class = 'cosmdl-collapsible';
+        if ( $should_collapse ) {
+            $collapsible_class .= ' cosmdl-hidden';
+        }
+        echo '<div class="' . esc_attr( $collapsible_class ) . '">';
         echo '<div class="cosmdl-tabs">';
         // 默认仅输出“附件1”标签，其它附件标签由脚本在有数据或点击“+”时动态生成
         echo '<button type="button" class="cosmdl-tab active" data-idx="1">附件 1<span class="cosmdl-tab-close" data-idx="1">×</span></button>';
@@ -1459,10 +1504,10 @@ class CosMDL_Meta_Box {
         $general = array('cosmdl_official_site','cosmdl_softtype','cosmdl_name','cosmdl_size','cosmdl_date','cosmdl_author');
 
         for($idx=1;$idx<=6;$idx++){
-            echo '<div class="cosmdl-attach-group" data-idx="'.esc_attr($idx).'"'.($idx===1?'':' style="display:none"').'>';
+            echo '<div class="cosmdl-attach-group'.($idx===1?'':' cosmdl-hidden').'" data-idx="'.esc_attr($idx).'">';
 
             echo '<div class="general-row cosmdl-smart-row">';
-            echo '<label style="display:inline-block;min-width:100px;vertical-align:middle;">'.esc_html__('智能识别','cosmautdl').'</label>';
+            echo '<label class="cosmdl-field-label">'.esc_html__('智能识别','cosmautdl').'</label>';
             echo '<div class="cosmdl-smart-wrap">';
             echo '<textarea class="cosmdl-smart-input" rows="2" placeholder="'.esc_attr__('粘贴网盘原始分享内容（包含链接/提取码/访问码），点击【识别】自动回填到下方对应网盘','cosmautdl').'" spellcheck="false"></textarea>';
             echo '<div class="cosmdl-smart-actions">';
@@ -1479,7 +1524,7 @@ class CosMDL_Meta_Box {
                 $key = $this->key_for_index($f['name'], $idx);
                 $val = $this->get_meta($post->ID, $key);
                 echo '<div class="general-row">';
-                echo '<label for="'.esc_attr($key).'" style="display:inline-block;min-width:100px;vertical-align:middle;">'.esc_html($f['title']).'</label>';
+                echo '<label for="'.esc_attr($key).'" class="cosmdl-field-label">'.esc_html($f['title']).'</label>';
                 if ($f['type']==='text'){
                     // 中文注释：为特定字段提供更友好的占位提示
                     $placeholder = '';
@@ -1490,13 +1535,13 @@ class CosMDL_Meta_Box {
                     } elseif ($f['name']==='cosmdl_date'){
                         $placeholder = '留空则显示文章的发布日期';
                     }
-                    echo '<input class="general-input" type="text" name="'.esc_attr($key).'" id="'.esc_attr($key).'" value="'.esc_attr($val).'"'.($placeholder?' placeholder="'.esc_attr($placeholder).'"':'').' style="padding:0 8px;height:30px;box-sizing:border-box;" />';
+                    echo '<input class="general-input" type="text" name="'.esc_attr($key).'" id="'.esc_attr($key).'" value="'.esc_attr($val).'"'.($placeholder?' placeholder="'.esc_attr($placeholder).'"':'').' />';
                     // 为“资源大小”添加单位下拉（KB/MB/GB，默认MB），紧邻输入框
                     if ($f['name']==='cosmdl_size'){
                         $unit_key = $this->key_for_index('cosmdl_size_unit', $idx);
                         $unit_val = $this->get_meta($post->ID, $unit_key);
                         if (!$unit_val) { $unit_val = 'MB'; }
-                        echo '<select class="general-input select-input" name="'.esc_attr($unit_key).'" id="'.esc_attr($unit_key).'" style="max-width:100px;padding:0 8px;height:30px;box-sizing:border-box;" >'
+                        echo '<select class="general-input select-input cosmdl-size-unit" name="'.esc_attr($unit_key).'" id="'.esc_attr($unit_key).'" >'
                            . '<option value="KB" '.selected(strtoupper($unit_val),'KB',false).'>KB</option>'
                            . '<option value="MB" '.selected(strtoupper($unit_val),'MB',false).'>MB</option>'
                            . '<option value="GB" '.selected(strtoupper($unit_val),'GB',false).'>GB</option>'
@@ -1504,16 +1549,16 @@ class CosMDL_Meta_Box {
                     }
                     // 提示性文本：说明更新日期的自动填充与展示策略
                     if ($f['name']==='cosmdl_date'){
-                        echo '<p class="description cosmdl-hint" style="margin:6px 0 0;color:#666;">'
+                        echo '<p class="description cosmdl-hint">'
                            . '</p>';
                     }
                 } elseif ($f['type']==='textarea'){
                     echo '<textarea class="general-input" name="'.esc_attr($key).'" id="'.esc_attr($key).'" rows="3">'.esc_textarea($val).'</textarea>';
                 } elseif ($f['type']==='checkbox'){
-                    echo '<label class="cosmdl-switch" for="'.esc_attr($key).'" style="vertical-align:middle;"><input type="checkbox" name="'.esc_attr($key).'" id="'.esc_attr($key).'" value="yes" '.checked('yes', htmlentities($val,1), false).' /><span class="cosmdl-slider"></span></label>';
+                    echo '<label class="cosmdl-switch" for="'.esc_attr($key).'"><input type="checkbox" name="'.esc_attr($key).'" id="'.esc_attr($key).'" value="yes" '.checked('yes', htmlentities($val,1), false).' /><span class="cosmdl-slider"></span></label>';
                 } elseif ($f['type']==='select'){
                     $opts = isset($f['options']) && is_array($f['options']) ? $f['options'] : array();
-                    echo '<select class="general-input select-input" name="'.esc_attr($key).'" id="'.esc_attr($key).'" style="padding:0 8px;height:30px;box-sizing:border-box;">';
+                    echo '<select class="general-input select-input" name="'.esc_attr($key).'" id="'.esc_attr($key).'">';
                     foreach($opts as $k=>$label){ echo '<option value="'.esc_attr($k).'" '.selected($val,$k,false).'>'.esc_html($label).'</option>'; }
                     echo '</select>';
                 }
@@ -1536,16 +1581,16 @@ class CosMDL_Meta_Box {
 
 
                 echo '<div class="drive-row" data-drive-key="'.esc_attr($dkey).'">';
-                echo '<label for="'.esc_attr($url_key).'" style="display:inline-block;min-width:100px;vertical-align:middle;">'.esc_html($drive['label']).'</label>';
+                echo '<label for="'.esc_attr($url_key).'" class="cosmdl-field-label">'.esc_html($drive['label']).'</label>';
                 // 将LOGO移到输入框内部
                 $drive_icon_path = plugin_dir_url(dirname(__FILE__)) . 'images/' . $dkey . '.png';
-                echo '<div style="position:relative;display:inline-block;width:100%;max-width:540px;">';
-                echo '<img src="'.esc_url($drive_icon_path).'" alt="'.esc_attr($drive['label']).'" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:20px;height:20px;z-index:1;" />';
-                echo '<input class="url-input" type="text" name="'.esc_attr($url_key).'" id="'.esc_attr($url_key).'" value="'.esc_attr($url_val).'" data-drive-key="'.esc_attr($dkey).'" data-field="url" style="padding-left:34px;padding-right:8px;height:30px;box-sizing:border-box;" />';
+                echo '<div class="cosmdl-drive-input-wrap">';
+                echo '<img class="cosmdl-drive-icon" src="'.esc_url($drive_icon_path).'" alt="'.esc_attr($drive['label']).'" />';
+                echo '<input class="url-input" type="text" name="'.esc_attr($url_key).'" id="'.esc_attr($url_key).'" value="'.esc_attr($url_val).'" data-drive-key="'.esc_attr($dkey).'" data-field="url" />';
                 echo '</div>';
                 echo '<div class="inline">';
                 if ($pwd_key){
-                    echo '<input class="short-input" type="text" name="'.esc_attr($pwd_key).'" id="'.esc_attr($pwd_key).'" value="'.esc_attr($pwd_val).'" placeholder="提取码" data-drive-key="'.esc_attr($dkey).'" data-field="pwd" style="padding:0 8px;height:30px;box-sizing:border-box;" />';
+                    echo '<input class="short-input" type="text" name="'.esc_attr($pwd_key).'" id="'.esc_attr($pwd_key).'" value="'.esc_attr($pwd_val).'" placeholder="提取码" data-drive-key="'.esc_attr($dkey).'" data-field="pwd" />';
                 }
                 if ($show_qr_block === 'yes'){
                     echo '<label class="inline-text" for="'.esc_attr($unlock_key).'">扫码解锁</label>';
@@ -1908,9 +1953,9 @@ class CosMDL_Meta_Box {
     private function render_field_row($f, $value){
         echo '<tr><th><label for="'.esc_attr($f['name']).'">'.esc_html($f['title']).'</label></th><td>';
         if ($f['type']==='text'){
-            echo '<input type="text" name="'.esc_attr($f['name']).'" id="'.esc_attr($f['name']).'" value="'.esc_attr($value).'" style="width:70%" />';
+            echo '<input class="cosmdl-metabox-admin-input" type="text" name="'.esc_attr($f['name']).'" id="'.esc_attr($f['name']).'" value="'.esc_attr($value).'" />';
         } elseif ($f['type']==='textarea'){
-            echo '<textarea name="'.esc_attr($f['name']).'" id="'.esc_attr($f['name']).'" rows="4" style="width:70%">'.esc_textarea($value).'</textarea>';
+            echo '<textarea class="cosmdl-metabox-admin-input" name="'.esc_attr($f['name']).'" id="'.esc_attr($f['name']).'" rows="4">'.esc_textarea($value).'</textarea>';
         } elseif ($f['type']==='checkbox'){
             echo '<label class="switch" for="'.esc_attr($f['name']).'"><input type="checkbox" name="'.esc_attr($f['name']).'" id="'.esc_attr($f['name']).'" value="yes" '.checked('yes', htmlentities($value,1), false).' /><span class="slider"></span></label>';
         } elseif ($f['type']==='select'){

@@ -3,7 +3,7 @@
 Plugin Name: CosmautDL
 Plugin URI: https://cosmaut.com/cosmautdl
 Description: 专业的多网盘下载管理插件，支持百度网盘、阿里云盘、蓝奏云等主流网盘。提供智能下载卡片、扫码解锁、独立下载页面、下载统计等完整解决方案。采用现代化UI设计，支持自定义主题色和响应式布局。
-Version: 1.0.3
+Version: 1.0.4
 Author: Cosmaut
 Author URI: https://cosmaut.com/
 License: GPLv3
@@ -24,7 +24,7 @@ Requires PHP: 7.4
 if (!defined('ABSPATH')) { exit; }
 
 // 插件常量（中文注释：提供目录与版本标识，便于后续引用与资源定位）
-define('COSMDL_VERSION', '1.0.3');
+define('COSMDL_VERSION', '1.0.4');
 define('COSMDL_PLUGIN_FILE', __FILE__);
 define('COSMDL_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('COSMDL_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -629,6 +629,19 @@ add_filter('redirect_canonical', function($redirect_url, $requested_url){
     return $redirect_url;
 }, 10, 2);
 
+add_filter('pre_get_document_title', function($title){
+    if (get_query_var('cosmdl_tree') === '1') {
+        $paged = max(1, absint(get_query_var('paged')));
+        $suffix = '';
+        if ($paged > 1) {
+            /* translators: %d: Page number. */
+            $suffix = ' - ' . sprintf(__('第 %d 页', 'cosmautdl'), $paged);
+        }
+        return __('文件树（所有分享文件）', 'cosmautdl') . $suffix;
+    }
+    return $title;
+});
+
 // 中文注释：前端样式注册，确保下载页拥有独立卡片样式
 add_action('wp_enqueue_scripts', function(){
     $opts = get_option('cosmdl_options', array());
@@ -646,10 +659,75 @@ add_action('wp_enqueue_scripts', function(){
         wp_enqueue_style('cosmdl-tree', COSMDL_PLUGIN_URL . 'assets/tree.css', array(), cosmdl_asset_version('assets/tree.css'));
     }
 
+    // 中文注释：错误页样式加载（仅在错误页加载）
+    $is_error = (get_query_var('cosmdl_error') === '1');
+    if ($is_error) {
+        wp_enqueue_style('cosmdl-style');
+    }
+
     // 中文注释：下载页样式加载（仅在下载页加载）
     $is_download = (get_query_var('cosmdl_download') === '1');
     if ($is_download){
         wp_enqueue_style('cosmdl-style');
+
+        $opts = get_option('cosmdl_options', array());
+        $opts = is_array($opts) ? $opts : array();
+
+        $dynamic_css = '';
+
+        $file_theme = isset($opts['file_info_card_theme']) ? (string) $opts['file_info_card_theme'] : (isset($opts['card_theme']) ? (string) $opts['card_theme'] : 'green');
+        $file_radius = isset($opts['file_info_card_border_radius']) ? (string) $opts['file_info_card_border_radius'] : (isset($opts['card_border_radius']) ? (string) $opts['card_border_radius'] : 'medium');
+        $file_shadow = isset($opts['file_info_card_shadow']) ? (string) $opts['file_info_card_shadow'] : (isset($opts['card_shadow']) ? (string) $opts['card_shadow'] : 'yes');
+
+        $theme_map = array(
+            'green'  => '34,197,94',
+            'blue'   => '63,131,248',
+            'red'    => '239,68,68',
+            'purple' => '124,58,237',
+            'orange' => '245,158,11',
+            'pink'   => '236,72,153',
+            'indigo' => '99,102,241',
+            'teal'   => '20,184,166',
+            'gray'   => '107,114,128',
+        );
+        $rgb = isset($theme_map[$file_theme]) ? $theme_map[$file_theme] : $theme_map['green'];
+        if (!preg_match('/^\d{1,3},\d{1,3},\d{1,3}$/', $rgb)) {
+            $rgb = $theme_map['green'];
+        }
+
+        switch ($file_radius) {
+            case 'none':
+                $radius_px = '0px';
+                break;
+            case 'small':
+                $radius_px = '4px';
+                break;
+            case 'large':
+                $radius_px = '16px';
+                break;
+            case 'medium':
+            default:
+                $radius_px = '8px';
+                break;
+        }
+
+        $shadow_css = ($file_shadow === 'yes') ? '0 2px 16px rgba(0,0,0,0.06)' : 'none';
+        $dynamic_css .= '#cosmdl-download-wrap .file-info-card{--cosmdl-card-radius:' . $radius_px . ';--cosmdl-card-shadow:' . $shadow_css . ';--cosmdl-theme-rgb:' . $rgb . ';}';
+
+        $valid_links = 0;
+        for ($i = 1; $i <= 4; $i++) {
+            $label = isset($opts['custom_link_' . $i . '_label']) ? trim((string) $opts['custom_link_' . $i . '_label']) : '';
+            $url = isset($opts['custom_link_' . $i . '_url']) ? trim((string) $opts['custom_link_' . $i . '_url']) : '';
+            if ($label !== '' && $url !== '') {
+                $valid_links++;
+            }
+        }
+        $grid_cols = ($valid_links > 0) ? $valid_links : 1;
+        $dynamic_css .= "\n" . '#cosmdl-download-wrap .cosmdl-custom-links-content-wrapper{grid-template-columns:repeat(' . intval($grid_cols) . ',1fr);}';
+
+        if ($dynamic_css !== '') {
+            wp_add_inline_style('cosmdl-style', $dynamic_css);
+        }
 
         wp_enqueue_script('cosmdl-download');
         wp_localize_script('cosmdl-download', 'cosmdlDownload', array(
@@ -1106,8 +1184,11 @@ function cosmdl_handle_unlock_request(){
     // 非 wechat 模式：直接标记解锁（用于静态二维码或测试）
     if ($mode !== 'wechat' || !$appid || !$secret) {
         set_transient('cosmdl_unlocked_' . $scene, 1, 10 * MINUTE_IN_SECONDS);
-        echo '<!doctype html><meta charset="utf-8"><title>' . esc_html__('已解锁', 'cosmautdl') . '</title><p style="padding:20px;font:16px/1.6 system-ui">' . esc_html__('已记录解锁，请返回电脑页面继续下载。', 'cosmautdl') . '</p>';
-        exit;
+        wp_die(
+            esc_html__('已记录解锁，请返回电脑页面继续下载。', 'cosmautdl'),
+            esc_html__('已解锁', 'cosmautdl'),
+            array('response' => 200)
+        );
     }
 
 	// 微信 OAuth：若无 code，跳转授权；scope 采用 snsapi_base 获取 openid
@@ -1184,7 +1265,11 @@ function cosmdl_handle_unlock_request(){
 
     if ($subscribed === 1) {
         set_transient('cosmdl_unlocked_' . $scene, 1, 10 * MINUTE_IN_SECONDS);
-        echo '<!doctype html><meta charset="utf-8"><title>' . esc_html__('解锁成功', 'cosmautdl') . '</title><p style="padding:20px;font:16px/1.6 system-ui">' . esc_html__('已关注并解锁，请返回电脑页面继续下载。', 'cosmautdl') . '</p>';
+        wp_die(
+            esc_html__('已关注并解锁，请返回电脑页面继续下载。', 'cosmautdl'),
+            esc_html__('解锁成功', 'cosmautdl'),
+            array('response' => 200)
+        );
     } else {
         // 使用自定义模板输出失败提示
         $GLOBALS['cosmdl_follow_text'] = $follow_text;

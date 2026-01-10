@@ -11,7 +11,7 @@
 | 🏠 [插件主页](https://cosmaut.com/cosmautdl/) | 📖 [使用文档](https://cosmaut.com/cosmautdl/docs/) | ❓ [常见问题](https://cosmaut.com/cosmautdl/faq/) |
 |:---:|:---:|:---:|
 | 🐞 [BUG反馈](https://cosmaut.com/cosmautdl/feedback/) | 💬 [交流群](https://cosmaut.com/cosmautdl/group/) | ❤️ [赞助我们](https://cosmaut.com/cosmautdl/sponsor/) |
-| ⭐ [GitHub](https://github.com/cosmaut/cosmautdl) | 🧩 [WordPress 插件目录（搜索）](https://cn.wordpress.org/plugins/search/cosmautdl) | ⬇️ [插件下载页](https://cosmaut.com/cosmautdl-plugin.html) |
+| ⭐ [GitHub](https://github.com/cosmaut/cosmautdl) | 🧩 [WordPress 插件目录](https://cn.wordpress.org/plugins/search/cosmautdl) | ⬇️ [插件下载页](https://cosmaut.com/cosmautdl-plugin.html) |
 
 ## 适用场景
 
@@ -58,7 +58,6 @@
 
 - 独立下载页：`/downloads/{post_id}.html`
 - 文件树页：`/downloads/tree.html`
-- 统计页：`/downloads/stats.html`（前台路由会做权限检查，并跳转到后台统计页）
 - 跳转路由：`/{prefix}/{post_id}/{type}.html`（其中 `prefix` 可在后台配置，默认用于跳转中转）
 
 如果你的站点未开启固定链接，以上地址会自动退化为带参数的形式（例如 `?cosmdl_download=1&post_id=123`）。
@@ -84,4 +83,4 @@ WordPress 下载管理插件、多网盘下载、网盘链接管理、下载卡�
 
 ---
 
-&copy; 2024 星海博客. All rights reserved.
+&copy; 2024 Cosmaut. Released under GPLv3.

@@ -200,8 +200,59 @@ $cosmdl_clicks_table = $wpdb->prefix . 'cosmdl_clicks';
 $cosmdl_user_id = get_current_user_id();
 $cosmdl_ip = filter_input(INPUT_SERVER, 'REMOTE_ADDR', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $cosmdl_ip = is_string($cosmdl_ip) ? sanitize_text_field($cosmdl_ip) : '';
+if ($cosmdl_ip === '' && isset($_SERVER['REMOTE_ADDR'])) {
+    $cosmdl_ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
+}
+
+if ($cosmdl_ip === '') {
+    $cosmdl_ip_candidates = array();
+    $cosmdl_server_keys = array(
+        'HTTP_CF_CONNECTING_IP',
+        'HTTP_X_REAL_IP',
+        'HTTP_X_FORWARDED_FOR',
+        'HTTP_CLIENT_IP',
+        'REMOTE_ADDR',
+    );
+
+    foreach ($cosmdl_server_keys as $cosmdl_server_key) {
+        if (!isset($_SERVER[$cosmdl_server_key]) || !is_string($_SERVER[$cosmdl_server_key])) {
+            continue;
+        }
+
+        $cosmdl_candidate = sanitize_text_field(wp_unslash($_SERVER[$cosmdl_server_key]));
+        if ($cosmdl_candidate !== '') {
+            $cosmdl_ip_candidates[] = $cosmdl_candidate;
+        }
+    }
+
+    foreach ($cosmdl_ip_candidates as $cosmdl_raw_ip) {
+        $cosmdl_raw_ip = trim($cosmdl_raw_ip);
+        if ($cosmdl_raw_ip === '') {
+            continue;
+        }
+
+        if (strpos($cosmdl_raw_ip, ',') !== false) {
+            $cosmdl_parts = explode(',', $cosmdl_raw_ip);
+            $cosmdl_raw_ip = isset($cosmdl_parts[0]) ? trim($cosmdl_parts[0]) : '';
+        }
+
+        if ($cosmdl_raw_ip !== '' && preg_match('/^\d{1,3}(?:\.\d{1,3}){3}:\d+$/', $cosmdl_raw_ip)) {
+            $cosmdl_raw_ip = preg_replace('/:\d+$/', '', $cosmdl_raw_ip);
+        }
+
+        $cosmdl_raw_ip = sanitize_text_field($cosmdl_raw_ip);
+        if ($cosmdl_raw_ip !== '' && filter_var($cosmdl_raw_ip, FILTER_VALIDATE_IP)) {
+            $cosmdl_ip = $cosmdl_raw_ip;
+            break;
+        }
+    }
+}
+
 $cosmdl_ua = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 $cosmdl_ua = is_string($cosmdl_ua) ? sanitize_text_field($cosmdl_ua) : '';
+if ($cosmdl_ua === '' && isset($_SERVER['HTTP_USER_AGENT'])) {
+    $cosmdl_ua = sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT']));
+}
 $cosmdl_ref = wp_get_referer();
 $cosmdl_ref = is_string($cosmdl_ref) ? esc_url_raw($cosmdl_ref) : '';
 // 使用WordPress的current_time函数获取GMT时间并存储到数据库，确保时间显示统一（显示时再转为本地时间）

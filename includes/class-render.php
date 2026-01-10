@@ -198,7 +198,6 @@ class CosMDL_Render {
             echo '<a class="cosmdl-link" href="'.esc_url($href).'" rel="nofollow noopener" target="_blank">'.($meta['name'] ? esc_html($meta['name']) : '立即下载').'</a>';
         }
         echo '</p>';
-        echo '<style>.cosmdl-links{display:inline-flex;flex-wrap:wrap;gap:6px 8px}.cosmdl-sep{color:#999}</style>';
         echo '    </div>';
         
         // 广告位渲染 - 整合到卡片内容内部

@@ -1,15 +1,15 @@
 === CosmautDL ===
 Contributors: cosmaut
 Donate link: https://cosmaut.com/cosmautdl/sponsor/
-Tags: download, download-manager, file-download, download-page, cloud-drive, baidu-pan, aliyundrive, lanzou, quark, 123pan, file-tree, click-stats, wechat-unlock
+Tags: download, download-manager, file-download, cloud-drive, wechat-unlock
 Requires at least: 5.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Multi-cloud download manager: unified download cards + download pages + file-tree index + click statistics. (多网盘下载管理：下载卡片 / 独立下载页 / 文件树 / 统计)
+Multi-cloud download manager: unified download cards, dedicated download pages, a file-tree index, and click statistics.
 
 == Description ==
 
@@ -126,6 +126,9 @@ CosmautDL is primarily tested on single-site installations. For multisite, pleas
 4. Download statistics（下载统计）
 
 == Changelog ==
+
+= 1.0.4 =
+* 2026-01-06 Fix download stats details expansion and ensure click logs capture IP/UA.
 
 = 1.0.3 =
 * 2026-01-03 Smart recognition of cloud drive links in the editor meta box.（编辑器网盘链接智能识别）

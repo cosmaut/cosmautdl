@@ -25,7 +25,7 @@ if ($cosmdl_rows === false) {
   <h1 class="t-lg"><?php echo esc_html__('下载统计（最近100条）', 'cosmautdl'); ?></h1>
 
   <div class="p-block mt15">
-    <table class="pk-table" style="width:100%">
+    <table class="pk-table cosmdl-stats-table">
       <thead>
         <tr>
           <th><?php echo esc_html__('时间', 'cosmautdl'); ?></th>
@@ -70,6 +70,6 @@ if ($cosmdl_rows === false) {
       </tbody>
     </table>
   </div>
-  <div class="puock-text mt10" style="text-align:center;color:var(--pk-c-9)"><?php echo esc_html__('如需更高级筛选和导出，可在后续版本扩展', 'cosmautdl'); ?></div>
+  <div class="puock-text mt10 cosmdl-stats-note"><?php echo esc_html__('如需更高级筛选和导出，可在后续版本扩展', 'cosmautdl'); ?></div>
 </div>
 <?php get_footer(); ?>

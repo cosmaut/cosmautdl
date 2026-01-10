@@ -35,7 +35,7 @@ if (isset($GLOBALS['wp_query'])){ $GLOBALS['wp_query']->is_404 = false; }
 $cosmdl_debug = (string) get_query_var('debug');
 if ($cosmdl_debug === '1'){
   try { get_header(); } catch (Throwable $e) {
-    echo '<div style="background:#fee;color:#900;padding:12px;margin:10px 0;border:1px solid #f99">' . esc_html__('加载主题页头时出错：', 'cosmautdl')
+    echo '<div class="cosmdl-tree-header-error">' . esc_html__('加载主题页头时出错：', 'cosmautdl')
        . esc_html($e->getMessage()) . '</div>';
   }
 } else {
@@ -57,9 +57,6 @@ if ($cosmdl_debug === '1'){
   // 检查是否在新窗口打开链接
   $cosmdl_tree_open_links_in_new_window = isset($cosmdl_opts['tree_open_links_in_new_window']) ? $cosmdl_opts['tree_open_links_in_new_window'] : 'yes';
   ?>
-  <script>
-    try { document.title = <?php echo wp_json_encode($cosmdl_page_title); ?>; } catch (e) {}
-  </script>
   <h1 class="t-lg"><?php echo esc_html($cosmdl_page_title); ?></h1>
   
   <?php
@@ -261,7 +258,7 @@ if ($cosmdl_debug === '1'){
   ?>
 
   <div class="p-block mt10">
-    <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+    <form method="get" class="cosmdl-tree-filter-form">
       <input type="hidden" name="cosmdl_tree" value="1" />
       <div>
         <label><?php esc_html_e('分类', 'cosmautdl'); ?></label>
@@ -299,9 +296,9 @@ if ($cosmdl_debug === '1'){
       </div>
       <div>
         <label><?php esc_html_e('大小范围', 'cosmautdl'); ?></label>
-        <input type="text" name="size_min" value="<?php echo esc_attr($cosmdl_size_min); ?>" placeholder="<?php echo esc_attr__('如 50M', 'cosmautdl'); ?>" style="width:100px" />
+        <input type="text" name="size_min" value="<?php echo esc_attr($cosmdl_size_min); ?>" placeholder="<?php echo esc_attr__('如 50M', 'cosmautdl'); ?>" class="cosmdl-tree-size-input" />
         -
-        <input type="text" name="size_max" value="<?php echo esc_attr($cosmdl_size_max); ?>" placeholder="<?php echo esc_attr__('如 2G', 'cosmautdl'); ?>" style="width:100px" />
+        <input type="text" name="size_max" value="<?php echo esc_attr($cosmdl_size_max); ?>" placeholder="<?php echo esc_attr__('如 2G', 'cosmautdl'); ?>" class="cosmdl-tree-size-input" />
       </div>
       <div>
         <label><?php esc_html_e('单位', 'cosmautdl'); ?></label>
@@ -356,7 +353,7 @@ if ($cosmdl_debug === '1'){
   </div>
 
   <div class="p-block mt15 cosmdl-tree-table-wrap">
-    <table class="pk-table" style="width:100%">
+    <table class="pk-table cosmdl-tree-table">
       <thead>
         <tr>
           <th class="cosmdl-col-title"><?php esc_html_e('文章标题', 'cosmautdl'); ?></th>
@@ -470,7 +467,7 @@ if ($cosmdl_debug === '1'){
                                 if ($cosmdl_url_val) {
                                     $cosmdl_alias = (isset($cosmdl_drive['alias']) && $cosmdl_drive['alias'] !== '') ? $cosmdl_drive['alias'] : $cosmdl_drive_key;
                                     // 20251206: 网盘 LOGO 可点击跳转
-                                    echo '<a href="' . esc_url($cosmdl_url_val) . '" target="_blank" rel="noopener noreferrer" style="text-decoration:none; display:inline-block; margin-right:4px;">';
+                                    echo '<a href="' . esc_url($cosmdl_url_val) . '" target="_blank" rel="noopener noreferrer" class="cosmdl-tree-drive-link">';
                                     echo wp_kses(cosmdl_drive_logo_html($cosmdl_alias, $cosmdl_drive_key), $cosmdl_allowed_drive_logo);
                                     echo '</a>';
                                 }
@@ -482,7 +479,7 @@ if ($cosmdl_debug === '1'){
                 }
             }
         } else {
-            echo '<tr><td colspan="6" style="text-align:center;padding:20px;">' . esc_html__('暂无数据', 'cosmautdl') . '</td></tr>';
+            echo '<tr><td colspan="6" class="cosmdl-tree-empty">' . esc_html__('暂无数据', 'cosmautdl') . '</td></tr>';
         }
         wp_reset_postdata();
         ?>

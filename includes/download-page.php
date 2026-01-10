@@ -400,50 +400,47 @@ if (!function_exists('cosmdl_render_download_statement')) {
         }
 
         $card_theme_is_default = ($card_theme === '' || $card_theme === 'default');
-        $using_default_colors = (
-            $border_color === $default_border_color &&
-            $bg_color === $default_bg_color &&
-            $title_color === $default_title_color &&
-            $text_color === $default_text_color
-        );
+		$using_default_colors = (
+			$border_color === $default_border_color &&
+			$bg_color === $default_bg_color &&
+			$title_color === $default_title_color &&
+			$text_color === $default_text_color
+		);
 
-        $should_output_inline_style = !($card_theme_is_default && $using_default_colors);
+		$should_output_inline_style = !($card_theme_is_default && $using_default_colors);
+		$inline_css = '';
+		if ($should_output_inline_style) {
+			$border_color_s = sanitize_hex_color($border_color);
+			$bg_color_s = sanitize_hex_color($bg_color);
+			$title_color_s = sanitize_hex_color($title_color);
+			$text_color_s = sanitize_hex_color($text_color);
+			if (!$border_color_s) { $border_color_s = $default_border_color; }
+			if (!$bg_color_s) { $bg_color_s = $default_bg_color; }
+			if (!$title_color_s) { $title_color_s = $default_title_color; }
+			if (!$text_color_s) { $text_color_s = $default_text_color; }
+			$inline_css .= '#cosmdl-statement-preview{--cosmdl-border:' . $border_color_s . ';--cosmdl-bg:' . $bg_color_s . ';--cosmdl-title:' . $title_color_s . ';--cosmdl-text:' . $text_color_s . ';}';
+		}
+		if (!empty($custom_css)) {
+			$css_raw = wp_strip_all_tags((string) $custom_css);
+			if ($css_raw !== '') {
+				$inline_css .= ($inline_css !== '' ? "\n" : '') . $css_raw;
+			}
+		}
+		if ($inline_css !== '') {
+			wp_add_inline_style('cosmdl-style', $inline_css);
+		}
 
-        ?>
-        <div id="cosmdl-statement-preview" class="cosmdl-section cosmdl-statement-section">
-            <?php if ($trimmed_title !== ''): ?>
-            <h3 class="cosmdl-section-title cosmdl-statement-title"><?php echo esc_html($statement_title); ?></h3>
-            <?php endif; ?>
-            <?php if ($trimmed_text !== ''): ?>
-            <p class="cosmdl-statement-text"><?php echo wp_kses_post($statement_text); ?></p>
-            <?php endif; ?>
-        </div>
-        
-        <?php
-        if ($should_output_inline_style) {
-            echo '<style>';
-            echo '#cosmdl-statement-preview {';
-            echo 'border: 1px solid '.esc_attr($border_color).'; ';
-            echo 'background-color: '.esc_attr($bg_color).'; ';
-            echo 'padding: 16px; ';
-            echo 'border-radius: 8px; ';
-            echo '}';
-            echo '#cosmdl-statement-preview h3 {';
-            echo 'color: '.esc_attr($title_color).'; ';
-            echo 'margin-top: 0; ';
-            echo 'margin-bottom: 12px; ';
-            echo '}';
-            echo '#cosmdl-statement-preview p {';
-            echo 'color: '.esc_attr($text_color).'; ';
-            echo 'margin-bottom: 0; ';
-            echo '}';
-            echo '</style>';
-        }
-
-        if (!empty($custom_css)) {
-            echo '<style id="cosmdl-statement-custom-css">' . esc_html(wp_strip_all_tags((string) $custom_css)) . '</style>';
-        }
-    }
+		?>
+		<div id="cosmdl-statement-preview" class="cosmdl-section cosmdl-statement-section">
+			<?php if ($trimmed_title !== ''): ?>
+			<h3 class="cosmdl-section-title cosmdl-statement-title"><?php echo esc_html($statement_title); ?></h3>
+			<?php endif; ?>
+			<?php if ($trimmed_text !== ''): ?>
+			<p class="cosmdl-statement-text"><?php echo wp_kses_post($statement_text); ?></p>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
 }
 
 if (!function_exists('cosmdl_render_file_info_card')) {
@@ -518,7 +515,16 @@ if (!function_exists('cosmdl_render_file_info_card')) {
 			)
 		): 
         ?>
-        <div class="cosmdl-card file-info-card" aria-label="<?php echo esc_attr__('文件信息', 'cosmautdl'); ?>" style="--cosmdl-card-radius: <?php echo esc_attr($radius_px); ?>; --cosmdl-card-shadow: <?php echo esc_attr($shadow_css); ?>; --cosmdl-theme-rgb: <?php echo esc_attr($theme_rgb); ?>;">
+        <?php
+		$theme_rgb_s = preg_match('/^\d{1,3},\d{1,3},\d{1,3}$/', (string) $theme_rgb) ? (string) $theme_rgb : $theme_map['green']['rgb'];
+		$radius_px_s = in_array($radius_px, array('0px', '4px', '8px', '16px'), true) ? $radius_px : '8px';
+		$shadow_css_s = ($shadow_css === 'none' || $shadow_css === '0 2px 16px rgba(0,0,0,0.06)') ? $shadow_css : '0 2px 16px rgba(0,0,0,0.06)';
+		wp_add_inline_style(
+			'cosmdl-style',
+			'#cosmdl-download-wrap .file-info-card{--cosmdl-card-radius:' . $radius_px_s . ';--cosmdl-card-shadow:' . $shadow_css_s . ';--cosmdl-theme-rgb:' . $theme_rgb_s . ';}'
+		);
+		?>
+		<div class="cosmdl-card file-info-card" aria-label="<?php echo esc_attr__('文件信息', 'cosmautdl'); ?>">
             <?php if (trim((string) $file_title) !== ''): ?>
             <div class="cosmdl-card-header">
                 <span class="cosmdl-card-icon">⬇</span>
@@ -659,40 +665,57 @@ if (!function_exists('cosmdl_render_custom_links')) {
             }
         }
 
-        if ($border_color !== '') {
-            $custom_css .= ".cosmdl-custom-links { border-color: {$border_color}; }";
-            $has_custom_style = true;
-        }
+		$user_css = isset($opts['custom_links_custom_css']) ? $opts['custom_links_custom_css'] : '';
+		$has_custom_style = ($border_color !== '' || $bg_color !== '' || $title_color !== '' || $text_color !== '' || $user_css !== '');
+		$style_vars = '--cosmdl-link-count:' . intval($count) . ';';
+		if ($border_color !== '') {
+			$style_vars .= '--cosmdl-border:' . $border_color . ';';
+		}
+		if ($bg_color !== '') {
+			$style_vars .= '--cosmdl-bg:' . $bg_color . ';';
+		}
+		if ($title_color !== '') {
+			$style_vars .= '--cosmdl-title:' . $title_color . ';';
+		}
+		if ($text_color !== '') {
+			$style_vars .= '--cosmdl-text:' . $text_color . ';';
+		}
 
-        if ($bg_color !== '') {
-            $custom_css .= ".cosmdl-custom-links { background-color: {$bg_color}; }";
-            $has_custom_style = true;
-        }
-
-        if ($title_color !== '') {
-            $custom_css .= ".cosmdl-custom-links .cosmdl-section-title { color: {$title_color}; }";
-            $has_custom_style = true;
-        }
-
-        if ($text_color !== '') {
-            $custom_css .= ".cosmdl-link { color: {$text_color}; }";
-            $has_custom_style = true;
-        }
-        $user_css = isset($opts['custom_links_custom_css']) ? $opts['custom_links_custom_css'] : '';
-        if ($user_css !== '') {
-            $custom_css .= $user_css;
-            $has_custom_style = true;
-        }
-
-        // 4. 输出样式（如果需要自定义）
-        if ($has_custom_style) {
-            echo '<style>';
-            echo ".cosmdl-custom-links { border: 1px solid; padding: 16px; border-radius: 8px; }";
-            echo esc_html(wp_strip_all_tags((string) $custom_css));
-            echo '</style>';
-        }
-
-        echo '<div class="cosmdl-section cosmdl-custom-links cosmdl-mt-10" style="--cosmdl-link-count: ' . intval($count) . ';' . ($has_custom_style ? ' border-style: solid;' : '') . '">';
+		$inline_css = '#cosmdl-download-wrap .cosmdl-custom-links{--cosmdl-link-count:' . intval($count) . ';';
+		if ($border_color !== '') {
+			$border_color_s = sanitize_hex_color($border_color);
+			if ($border_color_s) {
+				$inline_css .= '--cosmdl-border:' . $border_color_s . ';';
+			}
+		}
+		if ($bg_color !== '') {
+			$bg_color_s = sanitize_hex_color($bg_color);
+			if ($bg_color_s) {
+				$inline_css .= '--cosmdl-bg:' . $bg_color_s . ';';
+			}
+		}
+		if ($title_color !== '') {
+			$title_color_s = sanitize_hex_color($title_color);
+			if ($title_color_s) {
+				$inline_css .= '--cosmdl-title:' . $title_color_s . ';';
+			}
+		}
+		if ($text_color !== '') {
+			$text_color_s = sanitize_hex_color($text_color);
+			if ($text_color_s) {
+				$inline_css .= '--cosmdl-text:' . $text_color_s . ';';
+			}
+		}
+		$inline_css .= '}';
+		$css_raw = '';
+		if ($user_css !== '') {
+			$css_raw = wp_strip_all_tags((string) $user_css);
+		}
+		if ($css_raw !== '') {
+			$inline_css .= "\n" . $css_raw;
+		}
+		wp_add_inline_style('cosmdl-style', $inline_css);
+		echo '<div class="cosmdl-section cosmdl-custom-links cosmdl-mt-10">';
         if ($custom_title_trimmed !== '') {
             echo '<div class="cosmdl-custom-links-title-wrapper">';
             echo '<h3 class="cosmdl-section-title cosmdl-custom-links-title">' . esc_html($custom_title) . '</h3>';
@@ -771,42 +794,39 @@ if (!function_exists('cosmdl_render_drive_cards')) {
         $default_title_color = '#111827';
         $default_text_color = '#6b7280';
 
-        $card_theme_is_default = ($pan_card_theme === '' || $pan_card_theme === 'default');
-        $using_default_colors = (
-            $border_color === $default_border_color &&
-            $bg_color === $default_bg_color &&
-            $title_color === $default_title_color &&
-            $text_color === $default_text_color
-        );
+		$card_theme_is_default = ($pan_card_theme === '' || $pan_card_theme === 'default');
+		$using_default_colors = (
+			$border_color === $default_border_color &&
+			$bg_color === $default_bg_color &&
+			$title_color === $default_title_color &&
+			$text_color === $default_text_color
+		);
 
-        $should_output_inline_style = !($card_theme_is_default && $using_default_colors);
+		$should_output_inline_style = !($card_theme_is_default && $using_default_colors);
+		$inline_css = '';
+		if ($should_output_inline_style) {
+			$border_color_s = sanitize_hex_color($border_color);
+			$bg_color_s = sanitize_hex_color($bg_color);
+			$title_color_s = sanitize_hex_color($title_color);
+			$text_color_s = sanitize_hex_color($text_color);
+			if (!$border_color_s) { $border_color_s = $default_border_color; }
+			if (!$bg_color_s) { $bg_color_s = $default_bg_color; }
+			if (!$title_color_s) { $title_color_s = $default_title_color; }
+			if (!$text_color_s) { $text_color_s = $default_text_color; }
 
-        if ($should_output_inline_style || !empty($custom_css)) {
-            echo '<style>';
+			$inline_css .= '#cosmdl-download-wrap .cosmdl-pan-cards-section{--cosmdl-border:' . $border_color_s . ';--cosmdl-bg:' . $bg_color_s . ';--cosmdl-title:' . $title_color_s . ';--cosmdl-text:' . $text_color_s . ';}';
+		}
 
-            if ($should_output_inline_style) {
-                echo '.cosmdl-pan-cards-section {';
-                echo 'border: 1px solid ' . esc_attr($border_color) . ';';
-                echo 'background-color: ' . esc_attr($bg_color) . ';';
-                echo 'padding: 16px;';
-                echo 'border-radius: 8px;';
-                echo '}';
-                
-                echo '.cosmdl-pan-cards-section .cosmdl-section-title {';
-                echo 'color: ' . esc_attr($title_color) . ';';
-                echo '}';
-                
-                echo '.cosmdl-pan-cards-section {';
-                echo 'color: ' . esc_attr($text_color) . ';';
-                echo '}';
-            }
-
-			if (!empty($custom_css)) {
-				echo esc_html(wp_strip_all_tags((string) $custom_css));
+		if (!empty($custom_css)) {
+			$css_raw = wp_strip_all_tags((string) $custom_css);
+			if ($css_raw !== '') {
+				$inline_css .= ($inline_css !== '' ? "\n" : '') . $css_raw;
 			}
+		}
 
-            echo '</style>';
-        }
+		if ($inline_css !== '') {
+			wp_add_inline_style('cosmdl-style', $inline_css);
+		}
 
         $pan_cards_html = isset($opts['pan_cards_html']) ? $opts['pan_cards_html'] : '';
 
@@ -1033,34 +1053,33 @@ if (!function_exists('cosmdl_render_download_tips')) {
             $text_color === $default_text_color
         );
 
-        $should_output_inline_style = !($card_theme_is_default && $using_default_colors);
+		$should_output_inline_style = !($card_theme_is_default && $using_default_colors);
+		$inline_css = '';
+		if ($should_output_inline_style) {
+			$border_color_s = sanitize_hex_color($border_color);
+			$bg_color_s = sanitize_hex_color($bg_color);
+			$title_color_s = sanitize_hex_color($title_color);
+			$text_color_s = sanitize_hex_color($text_color);
+			if (!$border_color_s) { $border_color_s = $default_border_color; }
+			if (!$bg_color_s) { $bg_color_s = $default_bg_color; }
+			if (!$title_color_s) { $title_color_s = $default_title_color; }
+			if (!$text_color_s) { $text_color_s = $default_text_color; }
 
-        ?>
-        <?php if ($should_output_inline_style || !empty($custom_css)) : ?>
-        <style>
-        <?php if ($should_output_inline_style) : ?>
-        .cosmdl-download-tips-section {
-            border: 1px solid <?php echo esc_attr($border_color); ?>;
-            background-color: <?php echo esc_attr($bg_color); ?>;
-            padding: 16px;
-            border-radius: 8px;
-        }
-        .cosmdl-download-tips-section .cosmdl-section-title {
-            color: <?php echo esc_attr($title_color); ?>;
-        }
-        .cosmdl-download-tips-section,
-        .cosmdl-download-tips-section p,
-        .cosmdl-download-tips-section li,
-        .cosmdl-download-tips-section a {
-            color: <?php echo esc_attr($text_color); ?>;
-        }
-        <?php endif; ?>
-        <?php if (!empty($custom_css)) : ?>
-        <?php echo esc_html(wp_strip_all_tags((string) $custom_css)); ?>
-        <?php endif; ?>
-        </style>
-        <?php endif; ?>
-        <div class="cosmdl-section cosmdl-download-tips-section">
+			$inline_css .= '#cosmdl-download-wrap .cosmdl-download-tips-section{--cosmdl-border:' . $border_color_s . ';--cosmdl-bg:' . $bg_color_s . ';--cosmdl-title:' . $title_color_s . ';--cosmdl-text:' . $text_color_s . ';}';
+		}
+
+		if (!empty($custom_css)) {
+			$css_raw = wp_strip_all_tags((string) $custom_css);
+			if ($css_raw !== '') {
+				$inline_css .= ($inline_css !== '' ? "\n" : '') . $css_raw;
+			}
+		}
+
+		if ($inline_css !== '') {
+			wp_add_inline_style('cosmdl-style', $inline_css);
+		}
+		?>
+		<div class="cosmdl-section cosmdl-download-tips-section">
             <?php if (!empty($tips_title)): ?>
             <h3 class="cosmdl-section-title"><?php echo esc_html($tips_title); ?></h3>
             <?php endif; ?>
@@ -1108,93 +1127,93 @@ if (!function_exists('cosmdl_render_owner_statement')) {
 		}
 
 		$border_color = isset($opts['owner_statement_border_color'])
-            ? $opts['owner_statement_border_color']
+	            ? $opts['owner_statement_border_color']
 			: (isset($cosmdl_owner_statement_defaults['owner_statement_border_color']) ? $cosmdl_owner_statement_defaults['owner_statement_border_color'] : '#e5e7eb');
 		$bg_color = isset($opts['owner_statement_bg_color'])
-            ? $opts['owner_statement_bg_color']
+	            ? $opts['owner_statement_bg_color']
 			: (isset($cosmdl_owner_statement_defaults['owner_statement_bg_color']) ? $cosmdl_owner_statement_defaults['owner_statement_bg_color'] : '#ffffff');
 		$title_color = isset($opts['owner_statement_title_color'])
-            ? $opts['owner_statement_title_color']
+	            ? $opts['owner_statement_title_color']
 			: (isset($cosmdl_owner_statement_defaults['owner_statement_title_color']) ? $cosmdl_owner_statement_defaults['owner_statement_title_color'] : '#111827');
 		$text_color = isset($opts['owner_statement_text_color'])
-            ? $opts['owner_statement_text_color']
+	            ? $opts['owner_statement_text_color']
 			: (isset($cosmdl_owner_statement_defaults['owner_statement_text_color']) ? $cosmdl_owner_statement_defaults['owner_statement_text_color'] : '#6b7280');
         $custom_css = isset($opts['owner_statement_custom_css']) ? $opts['owner_statement_custom_css'] : '';
 
-        $card_theme = isset($opts['owner_statement_card_theme']) ? $opts['owner_statement_card_theme'] : '';
-        if ($card_theme !== '') {
-            $owner_statement_theme_colors = array(
-                'blue' => array('border' => '#acd0f9', 'bg' => '#e8f2fd', 'text' => '#4285f4'),
-                'green' => array('border' => '#a8dbc1', 'bg' => '#e7f5ee', 'text' => '#34a853'),
-                'purple' => array('border' => '#e1bbfc', 'bg' => '#f7edfe', 'text' => '#a256e3'),
-                'orange' => array('border' => '#f9d69f', 'bg' => '#fdf3e4', 'text' => '#fbbc05'),
-                'red' => array('border' => '#ffb7b2', 'bg' => '#fff5f4', 'text' => '#ea4335'),
-                'gray' => array('border' => '#d1d5db', 'bg' => '#f5f6f8', 'text' => '#64748b'),
-            );
+		$card_theme = isset($opts['owner_statement_card_theme']) ? $opts['owner_statement_card_theme'] : '';
+		if ($card_theme !== '') {
+			$owner_statement_theme_colors = array(
+				'blue' => array('border' => '#acd0f9', 'bg' => '#e8f2fd', 'text' => '#4285f4'),
+				'green' => array('border' => '#a8dbc1', 'bg' => '#e7f5ee', 'text' => '#34a853'),
+				'purple' => array('border' => '#e1bbfc', 'bg' => '#f7edfe', 'text' => '#a256e3'),
+				'orange' => array('border' => '#f9d69f', 'bg' => '#fdf3e4', 'text' => '#fbbc05'),
+				'red' => array('border' => '#ffb7b2', 'bg' => '#fff5f4', 'text' => '#ea4335'),
+				'gray' => array('border' => '#d1d5db', 'bg' => '#f5f6f8', 'text' => '#64748b'),
+			);
 
-            if (isset($owner_statement_theme_colors[$card_theme])) {
-                $preset = $owner_statement_theme_colors[$card_theme];
+			if (isset($owner_statement_theme_colors[$card_theme])) {
+				$preset = $owner_statement_theme_colors[$card_theme];
 
-                $default_border = isset($owner_statement_defaults['owner_statement_border_color']) ? $owner_statement_defaults['owner_statement_border_color'] : '#e5e7eb';
-                $default_bg = isset($owner_statement_defaults['owner_statement_bg_color']) ? $owner_statement_defaults['owner_statement_bg_color'] : '#ffffff';
-                $default_title = isset($owner_statement_defaults['owner_statement_title_color']) ? $owner_statement_defaults['owner_statement_title_color'] : '#111827';
-                $default_text = isset($owner_statement_defaults['owner_statement_text_color']) ? $owner_statement_defaults['owner_statement_text_color'] : '#6b7280';
+				$default_border = isset($cosmdl_owner_statement_defaults['owner_statement_border_color']) ? $cosmdl_owner_statement_defaults['owner_statement_border_color'] : '#e5e7eb';
+				$default_bg = isset($cosmdl_owner_statement_defaults['owner_statement_bg_color']) ? $cosmdl_owner_statement_defaults['owner_statement_bg_color'] : '#ffffff';
+				$default_title = isset($cosmdl_owner_statement_defaults['owner_statement_title_color']) ? $cosmdl_owner_statement_defaults['owner_statement_title_color'] : '#111827';
+				$default_text = isset($cosmdl_owner_statement_defaults['owner_statement_text_color']) ? $cosmdl_owner_statement_defaults['owner_statement_text_color'] : '#6b7280';
 
-                if ($border_color === $default_border) {
-                    $border_color = $preset['border'];
-                }
-                if ($bg_color === $default_bg) {
-                    $bg_color = $preset['bg'];
-                }
-                if ($title_color === $default_title) {
-                    $title_color = $preset['text'];
-                }
-                if ($text_color === $default_text) {
-                    $text_color = $preset['text'];
-                }
-            }
-        }
+				if ($border_color === $default_border) {
+					$border_color = $preset['border'];
+				}
+				if ($bg_color === $default_bg) {
+					$bg_color = $preset['bg'];
+				}
+				if ($title_color === $default_title) {
+					$title_color = $preset['text'];
+				}
+				if ($text_color === $default_text) {
+					$text_color = $preset['text'];
+				}
+			}
+		}
 
-        $default_border_color = isset($owner_statement_defaults['owner_statement_border_color']) ? $owner_statement_defaults['owner_statement_border_color'] : '#e5e7eb';
-        $default_bg_color = isset($owner_statement_defaults['owner_statement_bg_color']) ? $owner_statement_defaults['owner_statement_bg_color'] : '#ffffff';
-        $default_title_color = isset($owner_statement_defaults['owner_statement_title_color']) ? $owner_statement_defaults['owner_statement_title_color'] : '#111827';
-        $default_text_color = isset($owner_statement_defaults['owner_statement_text_color']) ? $owner_statement_defaults['owner_statement_text_color'] : '#6b7280';
+		$default_border_color = isset($cosmdl_owner_statement_defaults['owner_statement_border_color']) ? $cosmdl_owner_statement_defaults['owner_statement_border_color'] : '#e5e7eb';
+		$default_bg_color = isset($cosmdl_owner_statement_defaults['owner_statement_bg_color']) ? $cosmdl_owner_statement_defaults['owner_statement_bg_color'] : '#ffffff';
+		$default_title_color = isset($cosmdl_owner_statement_defaults['owner_statement_title_color']) ? $cosmdl_owner_statement_defaults['owner_statement_title_color'] : '#111827';
+		$default_text_color = isset($cosmdl_owner_statement_defaults['owner_statement_text_color']) ? $cosmdl_owner_statement_defaults['owner_statement_text_color'] : '#6b7280';
 
-        $card_theme_is_default = ($card_theme === '' || $card_theme === 'default');
-        $using_default_colors = (
-            $border_color === $default_border_color &&
-            $bg_color === $default_bg_color &&
-            $title_color === $default_title_color &&
-            $text_color === $default_text_color
-        );
+		$card_theme_is_default = ($card_theme === '' || $card_theme === 'default');
+		$using_default_colors = (
+			$border_color === $default_border_color &&
+			$bg_color === $default_bg_color &&
+			$title_color === $default_title_color &&
+			$text_color === $default_text_color
+		);
 
-        $should_output_inline_style = !($card_theme_is_default && $using_default_colors);
-        ?>
-        <?php if ($should_output_inline_style || !empty($custom_css)) : ?>
-        <style>
-        <?php if ($should_output_inline_style) : ?>
-        .cosmdl-owner-statement-section {
-            border: 1px solid <?php echo esc_attr($border_color); ?>;
-            background-color: <?php echo esc_attr($bg_color); ?>;
-            padding: 16px;
-            border-radius: 8px;
-        }
-        .cosmdl-owner-statement-section .cosmdl-section-title {
-            color: <?php echo esc_attr($title_color); ?>;
-        }
-        .cosmdl-owner-statement-section,
-        .cosmdl-owner-statement-section p,
-        .cosmdl-owner-statement-section li,
-        .cosmdl-owner-statement-section a {
-            color: <?php echo esc_attr($text_color); ?>;
-        }
-        <?php endif; ?>
-        <?php if (!empty($custom_css)) : ?>
-        <?php echo esc_html(wp_strip_all_tags((string) $custom_css)); ?>
-        <?php endif; ?>
-        </style>
-        <?php endif; ?>
-        <div class="cosmdl-section cosmdl-owner-statement-section">
+		$should_output_inline_style = !($card_theme_is_default && $using_default_colors);
+		$inline_css = '';
+		if ($should_output_inline_style) {
+			$border_color_s = sanitize_hex_color($border_color);
+			$bg_color_s = sanitize_hex_color($bg_color);
+			$title_color_s = sanitize_hex_color($title_color);
+			$text_color_s = sanitize_hex_color($text_color);
+			if (!$border_color_s) { $border_color_s = $default_border_color; }
+			if (!$bg_color_s) { $bg_color_s = $default_bg_color; }
+			if (!$title_color_s) { $title_color_s = $default_title_color; }
+			if (!$text_color_s) { $text_color_s = $default_text_color; }
+
+			$inline_css .= '#cosmdl-download-wrap .cosmdl-owner-statement-section{--cosmdl-border:' . $border_color_s . ';--cosmdl-bg:' . $bg_color_s . ';--cosmdl-title:' . $title_color_s . ';--cosmdl-text:' . $text_color_s . ';}';
+		}
+
+		if (!empty($custom_css)) {
+			$css_raw = wp_strip_all_tags((string) $custom_css);
+			if ($css_raw !== '') {
+				$inline_css .= ($inline_css !== '' ? "\n" : '') . $css_raw;
+			}
+		}
+
+		if ($inline_css !== '') {
+			wp_add_inline_style('cosmdl-style', $inline_css);
+		}
+		?>
+		<div class="cosmdl-section cosmdl-owner-statement-section">
             <?php if (!empty($owner_title)): ?>
             <h3 class="cosmdl-section-title"><?php echo esc_html($owner_title); ?></h3>
             <?php endif; ?>
@@ -1207,128 +1226,9 @@ if (!function_exists('cosmdl_render_owner_statement')) {
 
 
 if (!function_exists('cosmdl_render_copy_script')) {
-    /**
-     * 渲染复制功能的 JavaScript 脚本
-     */
-    function cosmdl_render_copy_script() {
-        ?>
-        <script>
-        function cosmdl_copy_text(text, btn) {
-            var input = document.createElement('input');
-            input.setAttribute('value', text);
-            document.body.appendChild(input);
-            input.select();
-            var result = document.execCommand('copy');
-            document.body.removeChild(input);
-            if(result){
-                var original = btn.innerText;
-                btn.innerText = '<?php echo esc_js(__('已复制', 'cosmautdl')); ?>';
-                setTimeout(function(){ btn.innerText = original; }, 2000);
-            }
-        }
-
-        // 中文注释：前台扫码解锁逻辑
-        (function(){
-            // 中文注释：前台 AJAX 地址（前台默认未定义 ajaxurl，因此显式声明）
-            var cosmdlAjaxUrl = '<?php echo esc_url(admin_url('admin-ajax.php')); ?>';
-
-            // 中文注释：查找当前页面中所有被标记为“需要扫码解锁”的网盘按钮
-            var lockedBtns = document.querySelectorAll('.cosmdl-pan-btn-locked');
-            if (!lockedBtns.length) { return; }
-
-            var qrBox = document.querySelector('.cosmdl-qr-unlock');
-            if (!qrBox) { return; }
-
-            var qrModal = document.querySelector('.cosmdl-qr-modal');
-            var modalClose = qrModal ? qrModal.querySelector('.cosmdl-qr-modal-close') : null;
-
-            var scene = qrBox.getAttribute('data-scene') || '';
-            var statusEl = qrBox.querySelector('.cosmdl-qr-status');
-            var tipsBar = document.querySelector('.cosmdl-tips');
-            var pollTimer = null;
-
-            function openQrModal(){
-                if (!qrModal) { return; }
-                qrModal.classList.add('is-open');
-                qrModal.setAttribute('aria-hidden', 'false');
-            }
-
-            function closeQrModal(){
-                if (!qrModal) { return; }
-                qrModal.classList.remove('is-open');
-                qrModal.setAttribute('aria-hidden', 'true');
-            }
-
-            function startPolling(){
-                if (!scene || pollTimer) { return; }
-                pollTimer = setInterval(function(){
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', cosmdlAjaxUrl + '?action=cosmdl_check_unlock&scene=' + encodeURIComponent(scene), true);
-                    xhr.onreadystatechange = function(){
-                        if (xhr.readyState === 4 && xhr.status === 200){
-                            var data = null;
-                            try { data = JSON.parse(xhr.responseText); } catch(e) { return; }
-                            if (data && data.unlocked){
-                                clearInterval(pollTimer);
-                                pollTimer = null;
-                                qrBox.setAttribute('data-status','done');
-                                if (statusEl){
-                                    statusEl.innerText = '<?php echo esc_js(__('已解锁，请点击下方网盘按钮开始下载', 'cosmautdl')); ?>';
-                                }
-                                for (var i = 0; i < lockedBtns.length; i++){
-                                    var btn = lockedBtns[i];
-                                    var target = btn.getAttribute('data-target-url');
-                                    var finalTarget = btn.getAttribute('data-target');
-                                    if (target){
-                                        btn.setAttribute('href', target);
-                                        if (finalTarget){
-                                            btn.setAttribute('target', finalTarget);
-                                        }
-                                        btn.classList.remove('cosmdl-pan-btn-locked');
-                                    }
-                                }
-                                if (tipsBar){
-                                    tipsBar.innerText = '<?php echo esc_js(__('已解锁，请点击下载按钮开始下载', 'cosmautdl')); ?>';
-                                    tipsBar.style.display = '';
-                                }
-                            }
-                        }
-                    };
-                    xhr.send(null);
-                }, 3000);
-            }
-
-            if (modalClose){
-                modalClose.addEventListener('click', function(){
-                    closeQrModal();
-                });
-            }
-
-            if (qrModal){
-                qrModal.addEventListener('click', function(e){
-                    if (e.target === qrModal){
-                        closeQrModal();
-                    }
-                });
-            }
-
-            for (var j = 0; j < lockedBtns.length; j++){
-                lockedBtns[j].addEventListener('click', function(e){
-                    if (this.classList.contains('cosmdl-pan-btn-locked')){
-                        e.preventDefault();
-                        if (tipsBar){
-                            tipsBar.innerText = '<?php echo esc_js(__('请先使用微信扫码二维码，完成验证后再点击下载按钮', 'cosmautdl')); ?>';
-                            tipsBar.style.display = '';
-                        }
-                        openQrModal();
-                        startPolling();
-                    }
-                });
-            }
-        })();
-        </script>
-        <?php
-    }
+	function cosmdl_render_copy_script() {
+		return;
+	}
 }
 
 // ==========================================
